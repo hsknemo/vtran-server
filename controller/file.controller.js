@@ -94,6 +94,9 @@ const getFile_func = async (req, res) => {
         }
       }
     }
+    fileList.sort((a, b) => {
+      return new Date(b.insertTime).getTime() - new Date(a.insertTime).getTime()
+    })
     res.send(SUCCESS(fileList))
   } catch (e) {
     res.send(ERROR(e.message))
