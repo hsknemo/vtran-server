@@ -1,26 +1,38 @@
 const eventEmitter = require('../Event/index')
+const { CALL_USER_REFRESN_EVENT, PROFILE_MESSAGE_EVENT} = require("./type/socket.event.type");
 let userMap = new Map()
 
 let setWsClientEventKey = 'set-ws-client'
 eventEmitter.on(setWsClientEventKey, (client) => {
-  if (!userMap.has(client.user.username)) {
-    userMap.set(client.user.username, {
-      ws: client.ws,
+  if (!userMap.has(client.user.id)) {
+    userMap.set(client.user.id, {
       clientId: client.clientId,
       user: client.user
     })
-    console.log('新用户进来')
-    eventEmitter.emit('call-user-refresh', client)
+    eventEmitter.emit(CALL_USER_REFRESN_EVENT, client)
   }
+  // 链接换成新的链接
+  let map = userMap.get(client.user.id)
+  map.ws = client.ws
+  userMap.set(client.user.id, map)
   console.log('【所有用户】', userMap.keys())
 })
 
-let callUserWsClientEventKey = 'call-user-refresh'
-eventEmitter.on(callUserWsClientEventKey, client => {
-  let user = userMap.get(client.user.username)
+eventEmitter.on(CALL_USER_REFRESN_EVENT, client => {
+  let user = userMap.get(client.user.id)
   user.ws.send(JSON.stringify({
     type: 'refreshMessage',
     data: 'refresh-user-list',
-    value: client.user.username
+    value: client.user.id
   }))
+})
+
+eventEmitter.on(PROFILE_MESSAGE_EVENT, client => {
+  let user = userMap.get(client.user.id)
+  user.ws.send(JSON.stringify({
+    type: 'profile-message',
+    data: 'profile-message',
+    value: client.user.id
+  }))
+  console.log('事件传过来的参数是', client)
 })

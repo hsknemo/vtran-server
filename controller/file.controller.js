@@ -7,6 +7,8 @@ const moment = require("moment");
 const {AUTHORIZATION} = require("../middware/Authorization");
 const fileModel = FileModel.new()
 const userModel = require('../model/user/user.model')
+const eventEmitter = require("../Event");
+const {PROFILE_MESSAGE_EVENT} = require("../Socket/type/socket.event.type");
 const routeName = '/file'
 const getRandomStr = () => {
   let str = `asasffvkvsrqeqwcasdad`
@@ -58,6 +60,12 @@ const file_send_func = async (req, res) => {
     } else {
       writeFile(req.files.file, Date.now() + '-' + getRandomStr() + req.body.name, req.body)
     }
+
+    eventEmitter.emit(PROFILE_MESSAGE_EVENT, {
+      user: {
+        id: req.body.toUserId
+      }
+    })
 
     res.send(SUCCESS(req.files))
   } catch (e) {
