@@ -17,7 +17,7 @@ eventEmitter.on(setWsClientEventKey, (client) => {
 
 let callUserWsClientEventKey = 'call-user-refresh'
 eventEmitter.on(callUserWsClientEventKey, client => {
-  let user = userMap.get(client.clientId)
+  let user = userMap.get(client.user.username)
   user.ws.send(JSON.stringify({
     type: 'refreshMessage',
     data: 'refresh-user-list',

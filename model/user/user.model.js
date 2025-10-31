@@ -1,4 +1,4 @@
-let {sql, exec, transaction, config} = require('../config/mysql')
+let {sql, exec, transaction, config} = require('../../config/mysql')
 const crypto = require("crypto");
 const fs = require('fs')
 const path = require('path')
@@ -73,6 +73,13 @@ class UserModel {
             return await this.saveUser(user)
         }
         throw new Error('用户已存在')
+    }
+
+    async findUserById(id) {
+        if (!id) return []
+        let userModel = await this.getUser()
+        let findResult = userModel.filter(item => item.id === id)
+        return findResult.length ? findResult : []
     }
 
     async findUserByName(username) {

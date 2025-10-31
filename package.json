@@ -6,6 +6,9 @@
   "scripts": {
     "serve": "node app.js"
   },
+  "nodemonConfig": {
+    "ignore": ["uploads/*"]
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

@@ -32,9 +32,9 @@ app.use(
   })
 );
 //开放静态资源目录
+app.use(express.static("uploads"));
 app.use(express.static("public"));
 app.use(express.static("views"));
-app.use(express.static("uploads"));
 
 // app.engine('html', require('express-art-template'));
 app.set("views", path.join(__dirname, "views"));
