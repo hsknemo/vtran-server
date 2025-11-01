@@ -2,13 +2,14 @@
 
 
 const routes = []
-const exportsController = require('./controllerConfig/controllerExport.config')
+const path = require('path')
+const exportsController = require(path.resolve(__dirname,'./controllerConfig/controllerExport.config'))
 // 需要导出的文件配置
 const includes = exportsController
 
 const CreateRoutes = function () {
     const fs = require('fs')
-    const result = fs.readdirSync('./controller')
+    const result = fs.readdirSync(path.resolve(__dirname))
     this.result = {}
     this.init = function () {
         result.forEach(element => {
