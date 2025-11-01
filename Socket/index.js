@@ -2,13 +2,20 @@ var WebSocket = require('ws')
 const {port} = require("../config/Port");
 const eventEmitter = require('../Event/index')
 const userEventService = require('../Event/user.event.service')
+const chalk = require('chalk')
+require('dotenv').config();
+let terminalInputTextStyle = new chalk.Chalk()
+
 module.exports = app => {
   let server = require('http').createServer(app)
   server.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+    console.log(terminalInputTextStyle.bgBlack.white(`【TONE-SOCKET Version 1.0】:`), {
+      port: process.env.TONE_PORT,
+      websocketPort: process.env.WEBSOCKET_PORT
+    });
   })
   let wss = new WebSocket.Server({
-    port: 9998
+    port: process.env.WEBSOCKET_PORT
   })
 
 

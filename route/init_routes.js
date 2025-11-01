@@ -4,7 +4,6 @@ const router = express.Router();
 const ROUTES_REGIS = require('./routes_regis')
 const log = console.log.bind(console)
 const defaultPath = process.env.API_PREFIX;
-console.log(defaultPath, 'defaultPath')
 const __regis_route = function (router, route) {
     let url_route_path = defaultPath
 
@@ -24,7 +23,7 @@ const regis_router = (router, routes) => {
     for (let i = 0; i < length; i++) {
         // 注册中间件 是否都有中间件函数
         var route = routes[i]
-        console.log('【接口输出】', `【${route.method}】`, `${route.path}`)
+        // console.log('【接口输出】', `【${route.method}】`, `${route.path}`)
         __regis_route(router, route)
     }
 
