@@ -6,6 +6,7 @@
 // 不需要带js后缀
 const exportsController = [
   "file.controller",
-  'user.controller'
+  'user.controller',
+  'page.controller',
 ];
 module.exports = exportsController;

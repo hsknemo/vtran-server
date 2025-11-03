@@ -34,7 +34,8 @@ eventEmitter.on(PROFILE_MESSAGE_EVENT, client => {
     data: 'profile-message',
     value: client.user.id
   }))
-  // console.log('事件传过来的参数是', client)
+  console.log('事件传过来的参数是', client)
+  console.log('发送用户', client.user.id)
 })
 
 eventEmitter.on(Chat_CLIENT_MESSAGE_EVENT, (client) => {
