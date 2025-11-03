@@ -109,7 +109,26 @@ const file_get = {
   func: getFile_func,
   desc: '获取用户文件列表'
 }
+
+const file_delete_func = async (req, res) => {
+  try {
+    let userId = req.Token解析结果.id
+    let fileId = req.body.fileId
+    let data = await fileModel.deleteFileById(userId, fileId)
+    res.send(SUCCESS(data))
+  } catch (e) {
+    res.send(ERROR(e.message))
+  }
+}
+const file_delete = {
+  method: 'post',
+  path: `${routeName}/delete`,
+  midFun: [AUTHORIZATION],
+  func: file_delete_func,
+  desc: '删除用户文件'
+}
 module.exports = [
   file_send,
-  file_get
+  file_get,
+  file_delete,
 ]
