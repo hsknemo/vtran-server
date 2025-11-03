@@ -19,6 +19,20 @@ class UserModel {
         return new this()
     }
 
+    async checkUserIsExitById(user) {
+        return new Promise((resolve, reject) => {
+            let isHasUser =  false
+            let userModel = this.getUser()
+            userModel.forEach(item => {
+                if (item.id === user.userId) {
+                    isHasUser= true
+                }
+            })
+            resolve(isHasUser)
+        })
+
+    }
+
     async checkUserIsExit(user) {
         return new Promise((resolve, reject) => {
             let isHasUser =  false
@@ -50,6 +64,18 @@ class UserModel {
     findUserAll(tokenUser) {
         let user = this.getUser()
         return user.filter(item => item.username !== tokenUser.username)
+    }
+
+    async updateUserOnlineStatus(userId, onlineStatus) {
+        let userModel = this.getUser()
+        let bool = await this.checkUserIsExitById({userId})
+        if (!bool) {
+            throw new Error('用户不存在')
+        }
+        let findResult = userModel.filter(item => item.id === userId)
+        if (!findResult.length) return
+        findResult[0].isOnline = onlineStatus
+        await this.saveUser(findResult[0])
     }
 
     async updateUser(user) {

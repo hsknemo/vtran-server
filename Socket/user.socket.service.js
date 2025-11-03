@@ -20,6 +20,9 @@ eventEmitter.on(setWsClientEventKey, (client) => {
 
 eventEmitter.on(CALL_USER_REFRESN_EVENT, client => {
   let user = userMap.get(client.user.id)
+  if (!user.ws) {
+    return
+  }
   user.ws.send(JSON.stringify({
     type: 'refreshMessage',
     data: 'refresh-user-list',
@@ -41,6 +44,9 @@ eventEmitter.on(PROFILE_MESSAGE_EVENT, client => {
 eventEmitter.on(Chat_CLIENT_MESSAGE_EVENT, (client) => {
   console.log(client.user)
   let user = userMap.get(client.user.id)
+  if (!user.ws) {
+     return
+  }
   user.ws.send(JSON.stringify({
     type: Chat_CLIENT_MESSAGE_EVENT,
     data: {

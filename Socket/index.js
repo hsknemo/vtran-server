@@ -31,7 +31,7 @@ module.exports = app => {
         let user = JSON.parse(evt.toString())
         if (user.type === 'ping') {
           if (user.id) {
-            ws.clientId = ws.clientId || crypto.randomUUID()
+            ws.clientId = user.id || crypto.randomUUID()
             eventEmitter.emit('set-ws-client', {
               ws,
               user,
@@ -58,6 +58,17 @@ module.exports = app => {
         console.error('Message parse error:', error);
       }
     });
+    ws.on('close', function () {
+      console.log('断开链接', ws.clientId)
+      // 离线
+      if (ws.clientId) {
+        eventEmitter.emit('update-user-onlineStatus', {
+          userId: ws.clientId,
+          onlineStatus: false
+        })
+
+      }
+    })
   })
   global.wss = wss
 }

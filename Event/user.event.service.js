@@ -3,6 +3,14 @@ const userModel = require('../model/user/user.model')
 
 eventEmitter.on('update-user', async user => {
   // console.log('【event: 】update-user', user)
-  await userModel.updateUser(user)
+  user.userId = user.id
+  await userModel.updateUserOnlineStatus(user.id, true)
 })
+
+
+eventEmitter.on('update-user-onlineStatus', async (userConfig) => {
+  await userModel.updateUserOnlineStatus(userConfig.userId, userConfig.onlineStatus)
+})
+
+
 
