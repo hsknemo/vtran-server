@@ -1,4 +1,4 @@
-const Base = require("../base");
+const Base = require("../base.model");
 const {resolve} = require("node:path");
 const fs = require('fs')
 

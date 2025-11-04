@@ -8,5 +8,6 @@ const exportsController = [
   "file.controller",
   'user.controller',
   'page.controller',
+  'group.controller',
 ];
 module.exports = exportsController;

@@ -44,7 +44,18 @@ class UserModel {
             })
             resolve(isHasUser)
         })
+    }
 
+    async findUserPool(users) {
+        let u = []
+        let userModel = await this.getUser()
+        userModel.forEach(item => {
+            if (users.includes(item.id)) {
+                u.push(item)
+            }
+        })
+
+        return u
     }
 
     async saveUser(user) {

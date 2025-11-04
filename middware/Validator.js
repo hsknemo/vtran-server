@@ -35,7 +35,7 @@ class Validator {
             // 验证类型
             if (item.type && item.value !== undefined && item.value !== null) {
                 if (!typeValidor(item.value, item.type)) {
-                    this.errorCollection.push(`${key}值类型错误 需要类型为 => ${item.type}`);
+                    this.errorCollection.push(`${key}值类型错误 需要类型为 ${item.type}`);
                 }
             }
             if (this.errorCollection.length) {
