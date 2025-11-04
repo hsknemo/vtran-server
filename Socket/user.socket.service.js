@@ -1,5 +1,5 @@
 const eventEmitter = require('../Event/index')
-const { CALL_USER_REFRESN_EVENT, PROFILE_MESSAGE_EVENT, Chat_CLIENT_MESSAGE_EVENT} = require("./type/socket.event.type");
+const { CALL_USER_REFRESN_EVENT, PROFILE_MESSAGE_EVENT, Chat_CLIENT_MESSAGE_EVENT, Chat_GROUP_MESSAGE_EVENT} = require("./type/socket.event.type");
 let userMap = new Map()
 
 let setWsClientEventKey = 'set-ws-client'
@@ -55,4 +55,39 @@ eventEmitter.on(Chat_CLIENT_MESSAGE_EVENT, (client) => {
       fromUser: client.user.from,
     }
   }))
+})
+
+
+/**
+ * 群组消息推送
+ */
+eventEmitter.on(Chat_GROUP_MESSAGE_EVENT, (client) => {
+  let clientUserList = client.user.userList
+  console.log('clientUserList is ******', clientUserList)
+  if (clientUserList.length === 1) {
+    // 发送自己
+    return
+  }
+  let filterId = clientUserList.filter(item => item !== client.user.from.id)
+  filterId.forEach(item => {
+    let user = userMap.get(item)
+    console.log(user)
+    if (!user) {
+      return;
+    }
+    if (!user && !user.ws) {
+      return
+    }
+
+    user.ws.send(JSON.stringify({
+      type: Chat_GROUP_MESSAGE_EVENT,
+      data: {
+        sendMsg: client.user.sendMsg,
+        session_id: client.user.session_id,
+        fromUser: client.user.from,
+      }
+    }))
+  })
+
+
 })

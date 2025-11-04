@@ -54,6 +54,16 @@ module.exports = app => {
             timestamp: Date.now()
           }))
         }
+
+        if (user.type === 'client-chat-group-message') {
+          eventEmitter.emit('client-chat-group-message', {
+            user: user.data
+          })
+          ws.send(JSON.stringify({
+            type: 'chat-group-end',
+            timestamp: Date.now()
+          }))
+        }
       } catch (error) {
         console.error('Message parse error:', error);
       }
