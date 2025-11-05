@@ -1,5 +1,7 @@
 const eventEmitter = require('../Event/index')
-const { CALL_USER_REFRESN_EVENT, PROFILE_MESSAGE_EVENT, Chat_CLIENT_MESSAGE_EVENT, Chat_GROUP_MESSAGE_EVENT} = require("./type/socket.event.type");
+const { CALL_USER_REFRESN_EVENT, PROFILE_MESSAGE_EVENT, Chat_CLIENT_MESSAGE_EVENT, Chat_GROUP_MESSAGE_EVENT,
+  Chat_Group_Add_User_Event
+} = require("./type/socket.event.type");
 let userMap = new Map()
 
 let setWsClientEventKey = 'set-ws-client'
@@ -32,6 +34,10 @@ eventEmitter.on(CALL_USER_REFRESN_EVENT, client => {
 
 eventEmitter.on(PROFILE_MESSAGE_EVENT, client => {
   let user = userMap.get(client.user.id)
+  // 用户不在线
+  if (!user || !user.ws) {
+    return
+  }
   user.ws.send(JSON.stringify({
     type: 'profile-message',
     data: 'profile-message',
@@ -88,6 +94,22 @@ eventEmitter.on(Chat_GROUP_MESSAGE_EVENT, (client) => {
       }
     }))
   })
-
-
 })
+
+eventEmitter.on(Chat_Group_Add_User_Event, groupData => {
+  groupData.userList.forEach(item => {
+    let user = userMap.get(item)
+    if (!user || !user.ws) {
+      return
+    }
+    user.ws.send(JSON.stringify({
+      type: Chat_Group_Add_User_Event,
+      data: {
+        name: groupData.name,
+        userId: item,
+        createUserId: groupData.createUserId,
+      }
+    }))
+  })
+})
+

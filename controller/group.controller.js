@@ -4,12 +4,16 @@ const GroupModel = require('../model/group/group.model')
 const userModel = require('../model/user/user.model')
 const {validatorMiddleware} = require("../middware/Validator");
 const {AUTHORIZATION} = require("../middware/Authorization");
+const eventEmitter = require("../Event");
+const {Chat_Group_Add_User_Event} = require("../Socket/type/socket.event.type");
 const groupModel = GroupModel.new()
 const group_create_func = async (req, res) => {
   try {
     let groupData = req.body
     let data = await groupModel.createGroupData(groupData)
-
+    if (groupData.userList) {
+      eventEmitter.emit(Chat_Group_Add_User_Event, groupData)
+    }
     res.send(SUCCESS(data))
   } catch (e) {
     res.send(ERROR(e.message))

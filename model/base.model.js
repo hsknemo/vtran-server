@@ -30,6 +30,11 @@ module.exports = class Base {
     return fileList.filter(item => item.toUser === id)
   }
 
+  async getFileListByFromUserId(id) {
+    let fileList = await this.getFileData()
+    return fileList.filter(item => item.fromUser === id)
+  }
+
   save(modelData) {
     fs.writeFileSync(this.filePath, JSON.stringify(modelData, null, 2), 'utf-8')
   }

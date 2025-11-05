@@ -42,9 +42,10 @@ class GroupModel extends Base {
     groupData.createTime = moment().format('YYYY-MM-DD HH:mm:ss')
     groupData.updateTime = moment().format('YYYY-MM-DD HH:mm:ss')
     // 存储当前创建人
-    groupData.userList = [
-      groupData.createUserId
-    ]
+    groupData.userList =  [].concat([
+        groupData.createUserId,
+      ...groupData.userList
+    ])
     let group = GroupDataStruct(groupData)
     let groupModelData = await this.getModelData()
     groupModelData[group.id] = group

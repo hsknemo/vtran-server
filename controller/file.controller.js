@@ -127,8 +127,39 @@ const file_delete = {
   func: file_delete_func,
   desc: '删除用户文件'
 }
+
+
+const getFile_func_mine = async (req, res) => {
+  try {
+    let userId = req.Token解析结果.id
+    let fileList = await fileModel.getFileListByFromUserId(userId)
+    if (fileList.length) {
+      for (let i = 0; i < fileList.length; i++) {
+        let item = fileList[i]
+        let user = await userModel.findUserById(item.toUser)
+        if (user.length) {
+          fileList[i].toUserName = user[0].username
+        }
+      }
+    }
+    fileList.sort((a, b) => {
+      return new Date(b.insertTime).getTime() - new Date(a.insertTime).getTime()
+    })
+    res.send(SUCCESS(fileList))
+  } catch (e) {
+    res.send(ERROR(e.message))
+  }
+}
+const file_get_mine = {
+  method: 'get',
+  path: `${routeName}/mine/list`,
+  midFun: [AUTHORIZATION],
+  func: getFile_func_mine,
+  desc: '获取当前用户发送的文件列表'
+}
 module.exports = [
   file_send,
   file_get,
   file_delete,
+  file_get_mine,
 ]
