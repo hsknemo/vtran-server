@@ -3,6 +3,7 @@ const {port} = require("../config/Port");
 const eventEmitter = require('../Event/index')
 const userEventService = require('../Event/user.event.service')
 const chalk = require('chalk')
+const {ClearUserWs_Event} = require("./type/socket.event.type");
 require('dotenv').config();
 require('console-png').attachTo(console);
 let terminalInputTextStyle = new chalk.Chalk()
@@ -77,6 +78,10 @@ module.exports = app => {
           onlineStatus: false
         })
 
+        eventEmitter.emit(ClearUserWs_Event, {
+          userId: ws.clientId,
+          onlineStatus: false
+        })
       }
     })
   })

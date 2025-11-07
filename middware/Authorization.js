@@ -25,7 +25,7 @@ const AUTHORIZATION = async (req, res, next) => {
       throw new Error('token expired')
     }
   }catch (e) {
-    res.send(ERROR_CODE(401,'登录信息过期'))
+    res.status(401).send(ERROR_CODE(401,'登录信息过期'))
   }
 }
 

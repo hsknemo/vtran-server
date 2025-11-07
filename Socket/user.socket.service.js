@@ -1,6 +1,6 @@
 const eventEmitter = require('../Event/index')
 const { CALL_USER_REFRESN_EVENT, PROFILE_MESSAGE_EVENT, Chat_CLIENT_MESSAGE_EVENT, Chat_GROUP_MESSAGE_EVENT,
-  Chat_Group_Add_User_Event
+  Chat_Group_Add_User_Event, ClearUserWs_Event
 } = require("./type/socket.event.type");
 let userMap = new Map()
 
@@ -48,9 +48,8 @@ eventEmitter.on(PROFILE_MESSAGE_EVENT, client => {
 })
 
 eventEmitter.on(Chat_CLIENT_MESSAGE_EVENT, (client) => {
-  console.log(client.user)
   let user = userMap.get(client.user.id)
-  if (!user.ws) {
+  if (!user || !user.ws) {
      return
   }
   user.ws.send(JSON.stringify({
@@ -111,5 +110,13 @@ eventEmitter.on(Chat_Group_Add_User_Event, groupData => {
       }
     }))
   })
+})
+
+// 离线剔除缓存用户
+eventEmitter.on(ClearUserWs_Event, groupData => {
+  if (userMap.has(groupData.userId)) {
+    userMap.delete(groupData.userId)
+  }
+  console.log(`剔除用户后 ${ groupData.userId}`, userMap.keys())
 })
 

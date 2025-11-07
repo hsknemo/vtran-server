@@ -9,4 +9,6 @@ module.exports = {
   Chat_GROUP_MESSAGE_EVENT: 'client-chat-group-message',
   // 聊天组添加用户事件
   Chat_Group_Add_User_Event: 'chat-group-add-user-event',
+  //
+  ClearUserWs_Event: 'clear-user-ws-status',
 }
