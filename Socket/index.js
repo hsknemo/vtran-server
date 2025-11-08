@@ -30,6 +30,8 @@ module.exports = app => {
     ws.on('message', async evt => {
       try {
         let user = JSON.parse(evt.toString())
+        let ip = req.headers['x-real-ip'] || req.connection.remoteAddress
+        user.ip = ip
         if (user.type === 'ping') {
           if (user.id) {
             ws.clientId = user.id || crypto.randomUUID()
@@ -67,6 +69,10 @@ module.exports = app => {
         }
       } catch (error) {
         console.error('Message parse error:', error);
+        ws.send(JSON.stringify({
+          type: 'server-error',
+          timestamp: Date.now()
+        }))
       }
     });
     ws.on('close', function () {

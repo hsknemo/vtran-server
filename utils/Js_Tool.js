@@ -59,9 +59,18 @@ const treeConstructor = function(data) {
   return data.filter(item => item.mark === 'main')
 }
 
+// 获取6位数
+const getRandomStr = () => {
+  let str = `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`
+  str = str.split('').sort(() => Math.random() - 0.5).join('')
+  str = str.slice(0, 6)
+  return str
+}
+
 module.exports = {
   isObj,
   treeConstructor,
   objHasLength,
   writeAppendSql,
+  getRandomStr,
 }

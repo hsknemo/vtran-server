@@ -4,3 +4,4 @@ node_modules
 uploads
 public
 views
+model/note/user_note/*

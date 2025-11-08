@@ -77,7 +77,7 @@ class UserModel {
         return user.filter(item => item.username !== tokenUser.username)
     }
 
-    async updateUserOnlineStatus(userId, onlineStatus) {
+    async updateUserOnlineStatus(userId, onlineStatus, ip) {
         let userModel = this.getUser()
         let bool = await this.checkUserIsExitById({userId})
         if (!bool) {
@@ -86,6 +86,9 @@ class UserModel {
         let findResult = userModel.filter(item => item.id === userId)
         if (!findResult.length) return
         findResult[0].isOnline = onlineStatus
+        if (ip) {
+            findResult[0].ip = ip
+        }
         await this.saveUser(findResult[0])
     }
 
