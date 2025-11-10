@@ -23,7 +23,6 @@ class FileModel extends Base {
   }
 
   async createOrUpdate(file) {
-    console.log('进来，，，，', file)
     await this.delay(500)
     let fileModel = await this.getFileData()
     fileModel.push(file)

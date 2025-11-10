@@ -33,18 +33,20 @@ eventEmitter.on(CALL_USER_REFRESN_EVENT, client => {
 })
 
 eventEmitter.on(PROFILE_MESSAGE_EVENT, client => {
+  console.log('事件传过来的参数是', client)
+  // console.log('发送用户', client.user.id)
   let user = userMap.get(client.user.id)
   // 用户不在线
   if (!user || !user.ws) {
     return
   }
+
   user.ws.send(JSON.stringify({
     type: 'profile-message',
     data: 'profile-message',
     value: client.user.id
   }))
-  console.log('事件传过来的参数是', client)
-  console.log('发送用户', client.user.id)
+
 })
 
 eventEmitter.on(Chat_CLIENT_MESSAGE_EVENT, (client) => {

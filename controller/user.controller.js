@@ -2,7 +2,8 @@ const {SUCCESS, ERROR} = require("../_requestResponse/setResponse");
 const userModel = require('../model/user/user.model')
 const {createJwtToken, secretKey, AUTHORIZATION} = require("../middware/Authorization");
 const routeName = '/user'
-
+const eventEmitter = require('../Event/index')
+const userSocketService = require('../Socket/user.socket.service')
 
 const ReturnTokenUser = (res, data) => {
   let token = createJwtToken(data, secretKey, '24h')
