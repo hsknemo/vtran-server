@@ -65,6 +65,36 @@ module.exports.NoteModel = class NoteModel extends Base {
     return '创建成功'
   }
 
+  async updateNoteModel(userId, requestBody) {
+    let hasFile = await this.hasFile(userId, requestBody.fileName)
+    if (!hasFile.isHasFile) {
+      throw new Error('文件不存在')
+    }
+    let path_name = hasFile.path_name
+    fs.writeFileSync(path_name, requestBody.content, 'utf-8')
+    let modelData = await this.getModelData()
+    modelData.forEach(item => {
+      if (item.id === requestBody.id) {
+        item.updateTime = moment().format('YYYY-MM-DD HH:mm:ss')
+      }
+    })
+    fs.writeFileSync(this.filePath, JSON.stringify(modelData, null, 2), 'utf-8')
+    return '更新成功'
+  }
+
+  async hasFile(userId, fileName) {
+    // 是否存在文件夹
+    if (!fs.existsSync(resolve(process.cwd() + `/model/note/user_note/${userId}`))) {
+      return false
+    }
+
+    let path_name = resolve(process.cwd() + `/model/note/user_note/${userId}/${fileName}`)
+    return {
+      isHasFile: fs.existsSync(path_name),
+      path_name,
+    }
+  }
+
   /**
    * @description 根据文件名称找出文件
    * @param userId
@@ -73,14 +103,14 @@ module.exports.NoteModel = class NoteModel extends Base {
    */
   async findNoteByFileName(userId, fileName) {
     // 是否存在文件夹
-    if (!fs.existsSync(resolve(process.cwd() + `/model/note/user_note/${userId}`))) {
-      return '文件不存在'
+    let hasFile = await this.hasFile(userId, fileName)
+
+    if (!hasFile.isHasFile) {
+      return ''
     }
 
-    let path = resolve(process.cwd() + `/model/note/user_note/${userId}/${fileName}`)
-    // return fs.readFileSync(path, 'utf-8')
-
-    let stream = fs.createReadStream(path, {
+    console.log(hasFile)
+    let stream = fs.createReadStream(hasFile.path_name, {
       highWaterMark: 10 * 1024 // 每次读取 64KB（可根据文件类型调整）
     })
     return stream
