@@ -2,7 +2,7 @@ const Base = require("../base.model");
 const {resolve} = require("node:path");
 const fs = require('fs')
 
-const FileDataStruct = function (o = {}){
+const FileDataStruct = function (o = {}) {
   return {
     id: o.id,
     fileName: o.fileName,
@@ -35,7 +35,7 @@ class FileModel extends Base {
    * @param fileId
    * @returns {Promise<void>}
    */
-  async deleteFileById(userId, fileId){
+  async deleteFileById(userId, fileId) {
     let fileList = await this.getFileListByUserId(userId)
     if (!fileList.length) {
       throw new Error('用户列表数据不存在')
@@ -62,6 +62,20 @@ class FileModel extends Base {
       throw new Error(e.message)
     }
 
+  }
+
+  async getDoubleUser(userId, request) {
+    let fromUserId = request.fromUserId
+    let modelData = await this.getModelData()
+    // 获取当前用户发送给我的数据
+    let toMeData = modelData.filter(item => item.fromUser === fromUserId && item.toUser === userId)
+    // 获取我发给当前用户的数据
+    let toHisData = modelData.filter(item => item.fromUser === userId && item.toUser === fromUserId)
+
+    return {
+      toMeData,
+      toHisData
+    }
   }
 
 

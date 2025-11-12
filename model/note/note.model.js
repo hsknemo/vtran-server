@@ -33,6 +33,22 @@ module.exports.NoteModel = class NoteModel extends Base {
     this.filePath = resolve(__dirname, './note.json')
   }
 
+  async deleteNoteModel(userId, requestBody) {
+    let hasFile = await this.hasFile(userId, requestBody.fileName)
+    if (!hasFile.isHasFile) {
+      throw new Error('文件不存在')
+    }
+    try {
+      fs.unlinkSync(hasFile.path_name)
+      let modelData = await this.getModelData()
+      modelData = modelData.filter(item => item.id !== requestBody.id)
+      await this.save(modelData)
+      return '删除成功'
+    } catch (e) {
+      throw new Error('删除失败')
+    }
+  }
+
   async saveOrUpdateNoteFileForUser(userId, content, path_name) {
     let dirName = resolve(process.cwd() + `/model/note/user_note/${userId}`)
     fs.mkdirSync(dirName, {recursive: true})

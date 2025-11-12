@@ -160,9 +160,30 @@ const file_get_mine = {
   func: getFile_func_mine,
   desc: '获取当前用户发送的文件列表'
 }
+
+
+const file_get_double_func = async (req, res) => {
+  try {
+    let userId = req.Token解析结果.id
+    let fileList = await fileModel.getDoubleUser(userId, req.body)
+    res.send(SUCCESS(fileList))
+  } catch (e) {
+    res.send(ERROR(e.message))
+  }
+}
+
+const file_get_double = {
+  method: 'post',
+  path: `${routeName}/doubleUser`,
+  midFun: [AUTHORIZATION],
+  func: file_get_double_func,
+  desc: '获取聊天双方用户发送和接收的文件列表'
+}
+
 module.exports = [
   file_send,
   file_get,
   file_delete,
   file_get_mine,
+  file_get_double,
 ]
