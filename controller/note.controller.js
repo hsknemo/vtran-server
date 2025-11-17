@@ -60,13 +60,13 @@ const note_get_one_func = async (req, res) => {
   try {
     let userId = req.Token解析结果.id
     let stream = await noteModel.findNoteByFileName(userId, req.body.fileName)
-    console.log(stream)
+
     res.setHeader('Transfer-Encoding', 'chunked'); // 分块传输
     res.setHeader('Content-Type', 'application/octet-stream');
     res.setHeader('Accept-Ranges', 'bytes');
+
     stream.pipe(res);
     stream.on('error', (err) => {
-      console.log(err)
       // 错误处理
       res.status(500).json(ERROR('File not found or read error'));
     })

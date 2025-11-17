@@ -72,7 +72,6 @@ const getUserAll_func = async (req, res) => {
     let data = await userModel.findUserAll(user)
     res.send(SUCCESS(data))
   } catch (e) {
-    console.log('进来', e)
     res.send(ERROR(e.message))
   }
 }

@@ -10,5 +10,6 @@ const exportsController = [
   'page.controller',
   'group.controller',
   'note.controller',
+  'ding.controller',
 ];
 module.exports = exportsController;

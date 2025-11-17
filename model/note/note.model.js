@@ -122,13 +122,14 @@ module.exports.NoteModel = class NoteModel extends Base {
     let hasFile = await this.hasFile(userId, fileName)
 
     if (!hasFile.isHasFile) {
-      return ''
+      throw new Error('文件不存在');
     }
 
-    console.log(hasFile)
     let stream = fs.createReadStream(hasFile.path_name, {
       highWaterMark: 10 * 1024 // 每次读取 64KB（可根据文件类型调整）
     })
+
+
     return stream
   }
 

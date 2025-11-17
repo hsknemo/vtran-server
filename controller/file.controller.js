@@ -9,7 +9,7 @@ const fileModel = FileModel.new()
 const userModel = require('../model/user/user.model')
 const eventEmitter = require("../Event");
 const {PROFILE_MESSAGE_EVENT} = require("../Socket/type/socket.event.type");
-const {delay} = require("../utils/Js_Tool");
+const fileChunkModel = require("../model/fileChunk/fileChunk.model")
 const routeName = '/file'
 const getRandomStr = () => {
   let str = `asasffvkvsrqeqwcasdad`
@@ -17,6 +17,7 @@ const getRandomStr = () => {
 }
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
+    console.log('走到这里***********')
     // 指定文件存储的目标目录
     cb(null, path.join(__dirname, '/uploads'));
   },
@@ -44,9 +45,15 @@ const writeFile = async (file, fileName, reqBody) => {
   fs.mkdirSync(`${basePath}/${userId}`, {recursive: true})
   let writeFilePath = `${basePath}/${userId}/${fileName}`
   // 写入用户文件
-  fs.writeFileSync(writeFilePath, file.data, 'binary')
-
-
+  fs.writeFile(writeFilePath, file.data, 'binary', (error, result) => {
+    if (!error) {
+      eventEmitter.emit(PROFILE_MESSAGE_EVENT, {
+        user: {
+          id: userId
+        }
+      })
+    }
+  })
 }
 const file_send_func = async (req, res) => {
   try {
@@ -62,13 +69,12 @@ const file_send_func = async (req, res) => {
       writeFile(req.files.file, Date.now() + '-' + getRandomStr() + req.body.name, req.body)
     }
 
-    await delay(1000)
 
-    eventEmitter.emit(PROFILE_MESSAGE_EVENT, {
-      user: {
-        id: req.body.toUserId
-      }
-    })
+    // eventEmitter.emit(PROFILE_MESSAGE_EVENT, {
+    //   user: {
+    //     id: req.body.toUserId
+    //   }
+    // })
 
     res.send(SUCCESS(req.files))
   } catch (e) {
@@ -180,10 +186,83 @@ const file_get_double = {
   desc: '获取聊天双方用户发送和接收的文件列表'
 }
 
+const file_chunk_upload_func = async (req, res) => {
+  try {
+    let md5Key = req.body.md5Key
+    let userId = req.body.toUserId
+    let chunk_index = req.body.index
+    let chunk = req.files.chunk
+    let fromUserId = req.body.fromUserId
+    let fileTotalLen = req.body.fileTotalLen
+    let chunkSliceNum = req.body.chunkSliceNum
+    let fileName = req.body.fileName
+
+    let time = Date.now()
+    const file_path = path.join(process.cwd(), `/uploads/chunk/${userId}`)
+    // console.log('创建文件夹路径', file_path)
+    fs.mkdirSync(file_path, {recursive: true})
+    fs.mkdirSync(file_path + `/${md5Key}`, {recursive: true})
+    let lastPosition = file_path + `/${md5Key}`
+    const chunk_write_path = path.join(lastPosition, `/${chunk_index}_${md5Key}_${time}`)
+    fs.writeFileSync(chunk_write_path, chunk.data, 'binary')
+
+    // 记录切片数据上传状态
+    let loaded = await fileChunkModel.chunkSaveAndUpdate({
+      id: md5Key,
+      toUser: userId,
+      fromUser: fromUserId,
+      chunkPath: chunk_write_path,
+      chunkTotalLen: fileTotalLen,
+      chunkSliceNum,
+      fileName,
+    })
+    res.send(SUCCESS({
+      chunk_index,
+      md5Key,
+      time,
+      isUploaded: loaded.fileIsUploaded
+    }))
+  } catch (e) {
+    console.log(e)
+    res.send(ERROR(e.message))
+  }
+}
+const file_chunk_upload = {
+  method: 'post',
+  path: `${routeName}/chunk`,
+  desc: '单文件切片上传',
+  midFun: upload.single('chunk'),
+  func: file_chunk_upload_func,
+}
+
+
+const file_chunk_merge_func = async (req, res) => {
+  try {
+    let md5Key = req.body.md5Key
+    let userId = req.body.toUserId
+    let fromUserId = req.body.fromUserId
+    let file = await fileChunkModel.chunkMerge({
+      md5Key, userId, fromUserId
+    })
+    res.send(SUCCESS('合并成功'))
+  } catch (e) {
+    res.send(ERROR(e.message))
+  }
+}
+const file_chunk_merge = {
+  method: 'post',
+  path: `${routeName}/chunk/merge`,
+  midFun: [AUTHORIZATION],
+  desc: '单文件切片合并',
+  func: file_chunk_merge_func
+}
+
 module.exports = [
   file_send,
   file_get,
   file_delete,
   file_get_mine,
   file_get_double,
+  file_chunk_upload,
+  file_chunk_merge,
 ]

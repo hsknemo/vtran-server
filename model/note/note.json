@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "id": "6e7fb681-5ce2-43c2-824b-b9e2417cad2f",
+    "name": "命令自查",
+    "contentUrl": "1763079780958_YZ8a1V.md",
+    "userId": "01d4b2e6-d1f4-48c6-bfe9-3635101c6984",
+    "desc": "快捷命令自查",
+    "createTime": "2025-11-14 08:23:00",
+    "updateTime": "2025-11-14 09:29:18",
+    "markColor": "gold"
+  }
+]
