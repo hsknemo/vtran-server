@@ -244,7 +244,21 @@ const file_chunk_merge_func = async (req, res) => {
     let file = await fileChunkModel.chunkMerge({
       md5Key, userId, fromUserId
     })
-    res.send(SUCCESS('合并成功'))
+    // 写入 发送文件数据
+    await fileModel.createOrUpdate(new FileDataStruct({
+      id: crypto.randomUUID(),
+      fileName: file.fileName,
+      toUser: userId,
+      fromUser: fromUserId,
+      insertTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+    }))
+    // 将新文件通知到用户
+    eventEmitter.emit(PROFILE_MESSAGE_EVENT, {
+      user: {
+        id: userId
+      }
+    })
+    res.send(SUCCESS(file.msg))
   } catch (e) {
     res.send(ERROR(e.message))
   }

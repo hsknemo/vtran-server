@@ -67,13 +67,15 @@ class FileChunkModel extends Base {
     if (!chunkRecord[0].fileIsUploaded) {
       throw new Error('文件上传不完整！无法合并')
     }
+    let fileName = chunkRecord[0].fileName
     let pathArray = chunkRecord[0].chunkPathArr
     // 创建用户文件夹
     let user_upload_file_path = path.join(process.cwd(), `/uploads/${mergeConfig.userId}`)
     fs.mkdirSync(`${user_upload_file_path}`, {recursive: true})
     let now = Date.now()
     try {
-      let writeStream = fs.createWriteStream(user_upload_file_path + '/' + now + '_' + chunkRecord[0].fileName)
+      let writeFileName = `${now}_${fileName}`
+      let writeStream = fs.createWriteStream(user_upload_file_path + '/' + writeFileName)
 
       pathArray.sort((a, b) => {
         return a.split('_')[0] - b.split('_')[0]
@@ -85,9 +87,21 @@ class FileChunkModel extends Base {
       }
 
       writeStream.end();
-      return '合并成功'
+
+      // 删除chunk 文件
+      let chunk_record_id = chunkRecord[0].id
+      let chunk_path_dir = path.join(process.cwd(), `/uploads/chunk/${chunkRecord[0].toUser}/${chunk_record_id}`)
+      fs.rmdirSync(chunk_path_dir, {recursive: true})
+
+      // chunk 记录清理
+      modelData = modelData.filter(item => item.id !== chunkRecord[0].id)
+      await this.save(modelData)
+      return {
+        msg: '合并成功',
+        fileName: writeFileName
+      }
     } catch (e) {
-      console.log(`【error: 】${chunkRecord[0].fileName}------合并失败`)
+      console.log(`【error: 】${fileName}------合并失败`)
       throw new Error('合并失败')
     }
 
