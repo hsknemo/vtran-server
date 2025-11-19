@@ -11,5 +11,6 @@ const exportsController = [
   'group.controller',
   'note.controller',
   'ding.controller',
+  'version.controller',
 ];
 module.exports = exportsController;

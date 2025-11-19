@@ -3,6 +3,7 @@ const path = require('path')
 const crypto =require('crypto')
 const moment = require("moment");
 const fs = require("fs");
+const {delay} = require("../../utils/Js_Tool");
 const ChunkDataModel = function (obj) {
   return {
     // 切片id 前端统一定义
@@ -33,10 +34,17 @@ class FileChunkModel extends Base {
     let fileIsUploaded = false
     let modelData = await this.getModelData()
     let chunkRecord = modelData.filter(item => item.id === fileRecord.id)
+
+
     // 第一次记录
     if (!chunkRecord.length) {
       let chunkModel = new ChunkDataModel(fileRecord)
-      chunkModel.chunkPathArr.push(fileRecord.chunkPath)
+      let set = new Set([fileRecord.chunkPath])
+      if (Number(fileRecord.chunkSliceNum) === set.size) {
+        chunkModel.fileIsUploaded = true
+        fileIsUploaded = true
+      }
+      chunkModel.chunkPathArr = Array.from(set)
       modelData.push(chunkModel)
     } else {
       let set = new Set(chunkRecord[0].chunkPathArr)
@@ -69,6 +77,9 @@ class FileChunkModel extends Base {
     }
     let fileName = chunkRecord[0].fileName
     let pathArray = chunkRecord[0].chunkPathArr
+    if (!pathArray && !pathArray.length) {
+      throw new Error('系统错误， 分片失败，请联系开发者！')
+    }
     // 创建用户文件夹
     let user_upload_file_path = path.join(process.cwd(), `/uploads/${mergeConfig.userId}`)
     fs.mkdirSync(`${user_upload_file_path}`, {recursive: true})
@@ -80,14 +91,13 @@ class FileChunkModel extends Base {
       pathArray.sort((a, b) => {
         return a.split('_')[0] - b.split('_')[0]
       })
-
+      console.log('根据路径创建读取')
       for (let i = 0; i < pathArray.length; i++) {
         const chunkBuffer = fs.readFileSync(pathArray[i]);
         writeStream.write(chunkBuffer); // 数据可能还在缓冲区
       }
 
       writeStream.end();
-
       // 删除chunk 文件
       let chunk_record_id = chunkRecord[0].id
       let chunk_path_dir = path.join(process.cwd(), `/uploads/chunk/${chunkRecord[0].toUser}/${chunk_record_id}`)
