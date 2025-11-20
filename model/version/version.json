@@ -1,18 +1,32 @@
 [
   {
-    "id": "769cf21b-5270-4f4c-ba27-97b091759a79",
-    "insertTime": "2025-11-19 10:25:49",
-    "versionTitle": "1.1.0",
+    "id": "4573c965-78aa-4d53-b0f2-95ccf75c49df",
+    "insertTime": "2025-11-19 11:16:08",
+    "versionTitle": "1.1.1",
     "versionList": [
-      "增加大文本上传"
+      {
+        "type": "feature",
+        "content": "版本控制器问题修改"
+      },
+      {
+        "type": "bug",
+        "content": "修复大文件上传问题"
+      },
+      {
+        "type": "warn",
+        "content": "取消过高浏览器不兼容的shikijs显示markdown语法高亮"
+      }
     ]
   },
   {
-    "id": "8d3d6461-b478-4041-a991-39e410a4f154",
-    "insertTime": "2025-11-19 10:26:19",
-    "versionTitle": "1.1.1",
+    "id": "b74ee26f-90d5-47d3-b0c0-99a72e72fc57",
+    "insertTime": "2025-11-20 10:14:01",
+    "versionTitle": "1.1.2",
     "versionList": [
-      "3333"
+      {
+        "type": "feature",
+        "content": "文件上传提交时，进行上传提示"
+      }
     ]
   }
 ]
