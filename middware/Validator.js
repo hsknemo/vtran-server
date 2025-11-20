@@ -50,6 +50,10 @@ class Validator {
 function validatorMiddleware(valideMapFactory) {
     return (req, res, next) => {
         let valideMap = typeof valideMapFactory === 'function' ? valideMapFactory(req) : valideMapFactory;
+        if (valideMap.debug) {
+            delete valideMap.debug
+            console.log( 'valideMap [debug]: ', valideMap)
+        }
         const validator = new Validator({ valideMap });
         try {
             validator.valideListAction();

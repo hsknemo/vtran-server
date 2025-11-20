@@ -78,6 +78,20 @@ class FileModel extends Base {
     }
   }
 
+  async downloadFile(requestBody) {
+    let file_path = resolve(process.cwd() + `/uploads/${requestBody.toUserId}/` + requestBody.fileName)
+    let fileStat = fs.existsSync(file_path)
+    if (!fileStat) {
+      throw new Error('文件不存在')
+    }
+
+    let stream = fs.createReadStream(file_path, {
+      highWaterMark: 10 * 1024
+    })
+
+    return stream
+  }
+
 
 }
 

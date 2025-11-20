@@ -10,6 +10,7 @@ const userModel = require('../model/user/user.model')
 const eventEmitter = require("../Event");
 const {PROFILE_MESSAGE_EVENT} = require("../Socket/type/socket.event.type");
 const fileChunkModel = require("../model/fileChunk/fileChunk.model")
+const {validatorMiddleware} = require("../middware/Validator");
 const routeName = '/file'
 const getRandomStr = () => {
   let str = `asasffvkvsrqeqwcasdad`
@@ -271,6 +272,51 @@ const file_chunk_merge = {
   func: file_chunk_merge_func
 }
 
+
+const file_download_func = async (req, res) => {
+  try {
+    let stream = await fileModel.downloadFile(req.body)
+    let fileName = req.body.fileName.split('_')[1]
+    let str = `attachment;filename=${encodeURI(fileName)}`
+    stream.pipe(res)
+    res.setHeader('Content-Disposition', str);
+    res.setHeader('Content-Type', 'application/octet-stream');
+    stream.on('error', (err) => {
+      // 错误处理
+      res.status(500).json(ERROR('File not found or read error'));
+    })
+    res.on('close', () => {
+      if (!stream.destroyed) {
+        stream.destroy(); // 停止读取，避免资源浪费
+      }
+    });
+  } catch (e) {
+    console.log('error', e)
+    res.status(500).send(ERROR(e.message))
+  }
+}
+
+const file_download = {
+  method: 'post',
+  path: `${routeName}/download`,
+  midFun: [AUTHORIZATION, validatorMiddleware(req => ({
+    fileId: {
+      type: 'String',
+      required: true,
+      message: 'fileId不能为空',
+      value: req.body.fileId
+    },
+    fileName: {
+      type: 'String',
+      required: true,
+      message: 'fileName不能为空',
+      value: req.body.fileName
+    }
+  }))],
+  desc: '文件下载',
+  func: file_download_func,
+}
+
 module.exports = [
   file_send,
   file_get,
@@ -279,4 +325,5 @@ module.exports = [
   file_get_double,
   file_chunk_upload,
   file_chunk_merge,
+  file_download,
 ]
