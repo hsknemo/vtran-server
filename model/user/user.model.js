@@ -3,16 +3,17 @@ const crypto = require("crypto");
 const fs = require('fs')
 const path = require('path')
 const moment = require("moment");
+const Base = require('../base.model')
 require('dotenv').config();
 
-class UserModel {
+class UserModel extends Base{
     constructor() {
-
+        super()
+        this.filePath = path.resolve(__dirname, './user.json')
     }
 
-    getUser() {
-        this.userModel = require('./user.json')
-        return this.userModel
+    async getUser() {
+       return await this.getModelData()
     }
 
     static init() {
@@ -20,9 +21,9 @@ class UserModel {
     }
 
     async checkUserIsExitById(user) {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             let isHasUser =  false
-            let userModel = this.getUser()
+            let userModel = await this.getUser()
             userModel.forEach(item => {
                 if (item.id === user.userId) {
                     isHasUser= true
@@ -34,9 +35,9 @@ class UserModel {
     }
 
     async checkUserIsExit(user) {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             let isHasUser =  false
-            let userModel = this.getUser()
+            let userModel = await this.getUser()
             userModel.forEach(item => {
                 if (item.username === user.username) {
                     isHasUser= true
@@ -59,7 +60,7 @@ class UserModel {
     }
 
     async saveUser(user) {
-        let userModel = this.getUser()
+        let userModel = await this.getUser()
         if (user.id) {
             userModel = userModel.filter(item => item.id !== user.id)
             user.updateTime = moment().format('YYYY-MM-DD HH:mm:ss')
@@ -68,17 +69,17 @@ class UserModel {
             user.insertTime = moment().format('YYYY-MM-DD HH:mm:ss')
         }
         userModel.push(user)
-        fs.writeFileSync(path.resolve(__dirname, './user.json'), JSON.stringify(this.userModel, null, 2), 'utf-8')
+        fs.writeFileSync(path.resolve(__dirname, './user.json'), JSON.stringify(userModel, null, 2), 'utf-8')
         return user
     }
 
-    findUserAll(tokenUser) {
-        let user = this.getUser()
+    async findUserAll(tokenUser) {
+        let user = await this.getUser()
         return user.filter(item => item.username !== tokenUser.username)
     }
 
     async updateUserOnlineStatus(userId, onlineStatus, ip) {
-        let userModel = this.getUser()
+        let userModel = await this.getUser()
         let bool = await this.checkUserIsExitById({userId})
         if (!bool) {
             throw new Error('用户不存在')
@@ -123,13 +124,45 @@ class UserModel {
     }
 
     async findUserByName(username) {
-        let userModel = this.getUser()
+        let userModel = await this.getUser()
         let bool = await this.checkUserIsExit({username})
         if (!bool) {
             throw new Error('用户不存在')
         }
         let findResult = userModel.filter(item => item.username === username)
         return findResult.length ? findResult[0] : null
+    }
+
+    async uploadProfile(tokenUser, req) {
+        try {
+            let requestBody = req.body
+            let desc = requestBody.desc
+            let blobImg = req?.files?.blobImg
+            let imgPath = ''
+            if (blobImg) {
+                let random_str = crypto.randomUUID() + '_' + Date.now()
+                let userProfilePath = path.join(process.cwd(), `/uploads/userProfile/${tokenUser.id}`)
+                if (!fs.existsSync(userProfilePath)) {
+                    fs.mkdirSync(userProfilePath, { recursive: true})
+                }
+                imgPath = `${random_str}.png`
+                fs.writeFileSync(path.join(userProfilePath, `/${imgPath}`), blobImg.data, 'binary')
+            }
+            let modelData = await this.getModelData()
+            modelData.forEach(item => {
+                if (item.id === tokenUser.id) {
+                    item.desc = desc
+                    if (imgPath) {
+                        item.userImg = imgPath
+                    }
+                }
+            })
+            await this.save(modelData)
+            return '保存成功'
+        } catch (e) {
+            throw new Error(e.message)
+        }
+
     }
 
 }

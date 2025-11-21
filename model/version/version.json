@@ -39,5 +39,16 @@
         "content": "优化下载功能，取消文件名过长问题"
       }
     ]
+  },
+  {
+    "id": "7400aa89-05a7-44ff-aeff-0b0d6c35bd36",
+    "insertTime": "2025-11-20 16:39:07",
+    "versionTitle": "1.1.4",
+    "versionList": [
+      {
+        "type": "bug",
+        "content": "上传文件锁逻辑调整"
+      }
+    ]
   }
 ]

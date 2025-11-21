@@ -5,7 +5,9 @@ uploads
 public
 views
 model/note/user_note/*
-user.json
-file.json
-group.json
-note.json
+uploads/*
+model/user/user.json
+model/note/note.json
+model/group/group.json
+model/file/file.json
+model/fileChunk/chunk.json

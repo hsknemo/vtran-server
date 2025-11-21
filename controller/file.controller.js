@@ -1,7 +1,7 @@
 const {SUCCESS, ERROR} = require("../_requestResponse/setResponse");
 const path = require('path')
 const fs = require('fs')
-const multer = require('multer')
+const upload = require("../middware/uploadsUtils");
 const { FileModel, FileDataStruct } = require("../model/file/file.model");
 const moment = require("moment");
 const {AUTHORIZATION} = require("../middware/Authorization");
@@ -16,17 +16,7 @@ const getRandomStr = () => {
   let str = `asasffvkvsrqeqwcasdad`
   return str.split('').sort(() => Math.random() - 0.5).join('')
 }
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    console.log('走到这里***********')
-    // 指定文件存储的目标目录
-    cb(null, path.join(__dirname, '/uploads'));
-  },
-  filename: function (req, file, cb) {
-    // 自定义文件名
-    cb(null, Date.now() + '-' + file.originalname);
-  },
-});
+
 const writeFile = async (file, fileName, reqBody) => {
   let basePath = path.resolve(process.cwd(), `uploads/`)
   // 获取接收人id
@@ -82,7 +72,6 @@ const file_send_func = async (req, res) => {
     res.send(ERROR(e.message))
   }
 }
-const upload = multer({storage});
 const file_send = {
   method: 'post',
   path: `${routeName}/send/user`,
