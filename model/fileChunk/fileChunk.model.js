@@ -66,7 +66,13 @@ class FileChunkModel extends Base {
     }
   }
 
-  async chunkMerge(mergeConfig) {
+  /**
+   *
+   * @param mergeConfig
+   * @param fixUpDir 修改最终写入文件的路径
+   * @returns {Promise<{msg: string, fileName: string}>}
+   */
+  async chunkMerge(mergeConfig, fixUpDir) {
     let modelData = await this.getModelData()
     let chunkRecord = modelData.filter(item => item.id === mergeConfig.md5Key)
     if (!chunkRecord.length) {
@@ -82,6 +88,10 @@ class FileChunkModel extends Base {
     }
     // 创建用户文件夹
     let user_upload_file_path = path.join(process.cwd(), `/uploads/${mergeConfig.userId}`)
+    if (fixUpDir) {
+      console.log('fixUpDir', fixUpDir)
+      user_upload_file_path = fixUpDir
+    }
     fs.mkdirSync(`${user_upload_file_path}`, {recursive: true})
     let now = Date.now()
     try {

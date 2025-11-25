@@ -8,30 +8,11 @@
     "ip": "::1"
   },
   {
-    "username": "uu",
-    "id": "78f4a28b-eb7a-4462-94af-5264b66e5672",
-    "insertTime": "2025-10-30 13:29:43",
-    "isOnline": true,
-    "updateTime": "2025-11-18 18:56:30",
-    "ip": "::1"
-  },
-  {
     "username": "bb",
     "id": "69cee7e6-e2b4-4c7f-afa2-4b0fe16f942d",
     "insertTime": "2025-10-30 13:36:58",
     "isOnline": true,
     "updateTime": "2025-10-31 23:32:07"
-  },
-  {
-    "username": "秦凯",
-    "id": "01d4b2e6-d1f4-48c6-bfe9-3635101c6984",
-    "insertTime": "2025-11-03 14:08:28",
-    "isOnline": true,
-    "updateTime": "2025-11-19 10:33:55",
-    "ip": "::1",
-    "auth": [
-      "addVersion"
-    ]
   },
   {
     "username": "zwm",
@@ -52,5 +33,28 @@
     "username": "test",
     "id": "b8e2a13f-33e1-47ba-834b-6e5da5da8cf9",
     "insertTime": "2025-11-08 19:49:36"
+  },
+  {
+    "username": "uu",
+    "id": "78f4a28b-eb7a-4462-94af-5264b66e5672",
+    "insertTime": "2025-10-30 13:29:43",
+    "isOnline": true,
+    "updateTime": "2025-11-25 11:29:46",
+    "ip": "::1",
+    "desc": "Tran 的理想不止于此",
+    "userImg": "c55edf06-c92d-4dba-9aaf-bd38f2234556_1763706006259.png"
+  },
+  {
+    "username": "秦凯",
+    "id": "01d4b2e6-d1f4-48c6-bfe9-3635101c6984",
+    "insertTime": "2025-11-03 14:08:28",
+    "isOnline": false,
+    "updateTime": "2025-11-25 15:10:09",
+    "ip": "::1",
+    "auth": [
+      "addVersion"
+    ],
+    "userImg": "d97c7e01-719f-47d7-9d0d-369a6246c6be_1763707008686.png",
+    "desc": "加油Tran 💪🏻💪🏻💪🏻"
   }
 ]

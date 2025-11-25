@@ -4,7 +4,6 @@ const {createJwtToken, secretKey, AUTHORIZATION} = require("../middware/Authoriz
 const routeName = '/user'
 const eventEmitter = require('../Event/index')
 const userSocketService = require('../Socket/user.socket.service')
-const upload = require('../middware/uploadsUtils')
 const ReturnTokenUser = (res, data) => {
   let token = createJwtToken(data, secretKey, '24h')
   res.header({

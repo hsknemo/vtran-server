@@ -4,6 +4,7 @@ module.exports = class Base {
   constructor() {
     this.filePath = null
     this.modelData = []
+    this.rootPath = process.cwd()
   }
 
   static new() {

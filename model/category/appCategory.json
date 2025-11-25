@@ -1,0 +1,38 @@
+[
+  {
+    "id": "775f0360-c75c-43ed-8ac2-11319df0685b",
+    "insertTime": "2025-11-25 15:05:06",
+    "categoryName": "2323",
+    "categoryCreateUser": "01d4b2e6-d1f4-48c6-bfe9-3635101c6984"
+  },
+  {
+    "id": "93991af0-88c4-48d1-9036-c7ad26d08ac4",
+    "insertTime": "2025-11-25 15:06:44",
+    "categoryName": "3443",
+    "categoryCreateUser": "01d4b2e6-d1f4-48c6-bfe9-3635101c6984"
+  },
+  {
+    "id": "6d54bd1f-9a26-45a6-9de9-c07602443b67",
+    "insertTime": "2025-11-25 15:12:51",
+    "categoryName": "截屏类",
+    "categoryCreateUser": "01d4b2e6-d1f4-48c6-bfe9-3635101c6984"
+  },
+  {
+    "id": "1f35e808-985b-4fa2-802f-95c1bc67ffdf",
+    "insertTime": "2025-11-25 15:13:00",
+    "categoryName": "编程类",
+    "categoryCreateUser": "01d4b2e6-d1f4-48c6-bfe9-3635101c6984"
+  },
+  {
+    "id": "e05a2e45-e74f-4e15-8744-5876e19fec2a",
+    "insertTime": "2025-11-25 15:13:19",
+    "categoryName": "未知类",
+    "categoryCreateUser": "01d4b2e6-d1f4-48c6-bfe9-3635101c6984"
+  },
+  {
+    "id": "4d2d256e-d3ee-44ec-ad90-0865e23e3a7a",
+    "insertTime": "2025-11-25 15:16:35",
+    "categoryName": "提效类",
+    "categoryCreateUser": "01d4b2e6-d1f4-48c6-bfe9-3635101c6984"
+  }
+]

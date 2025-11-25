@@ -12,5 +12,7 @@ const exportsController = [
   'note.controller',
   'ding.controller',
   'version.controller',
+  'software.controller',
+  'category.controller',
 ];
 module.exports = exportsController;

@@ -50,5 +50,31 @@
         "content": "上传文件锁逻辑调整"
       }
     ]
+  },
+  {
+    "id": "5bccecd6-166f-4890-ae48-43247a5892f1",
+    "insertTime": "2025-11-21 14:35:50",
+    "versionTitle": "1.1.5",
+    "versionList": [
+      {
+        "type": "feature",
+        "content": "丰富界面： 用户拥有上传头像功能"
+      },
+      {
+        "type": "feature",
+        "content": "丰富界面：展示用户的个性签名"
+      }
+    ]
+  },
+  {
+    "id": "73416535-b42a-4453-997e-601deafa8fd6",
+    "insertTime": "2025-11-25 11:30:23",
+    "versionTitle": "1.1.6",
+    "versionList": [
+      {
+        "type": "bug",
+        "content": "文件下载时候带下划线问题下载成txt"
+      }
+    ]
   }
 ]

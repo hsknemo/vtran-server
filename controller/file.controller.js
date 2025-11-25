@@ -75,7 +75,7 @@ const file_send_func = async (req, res) => {
 const file_send = {
   method: 'post',
   path: `${routeName}/send/user`,
-  midFun: upload.array('file', 5),
+  midFun: [AUTHORIZATION],
   func: file_send_func,
   desc: '接收前台文件发送到具体用户'
 }
@@ -213,7 +213,6 @@ const file_chunk_upload_func = async (req, res) => {
       isUploaded: loaded.fileIsUploaded
     }))
   } catch (e) {
-    console.log(e)
     res.send(ERROR(e.message))
   }
 }
@@ -221,7 +220,7 @@ const file_chunk_upload = {
   method: 'post',
   path: `${routeName}/chunk`,
   desc: '单文件切片上传',
-  midFun: upload.single('chunk'),
+  midFun: [AUTHORIZATION],
   func: file_chunk_upload_func,
 }
 
@@ -280,7 +279,6 @@ const file_download_func = async (req, res) => {
       }
     });
   } catch (e) {
-    console.log('error', e)
     res.status(500).send(ERROR(e.message))
   }
 }
