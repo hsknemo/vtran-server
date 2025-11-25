@@ -7,10 +7,14 @@ const fs = require("fs");
 const fileChunkModel = require("../model/fileChunk/fileChunk.model");
 const {validatorMiddleware} = require("../middware/Validator");
 const userModel = require("../model/user/user.model");
+const { FileModel } = require("../model/file/file.model");
+const fileModel = FileModel.new()
 const routeName = '/software'
 const software_list_func = async (req, res) => {
   try {
-    let softWareList = await softwareModel.getSoftwareList()
+    let softWareList = await softwareModel.getSoftwareList({
+      appName: req.query.appName
+    })
     if (softWareList) {
       softWareList.sort((a, b) => {
         return new Date(b.insertTime).getTime() - new Date(a.insertTime).getTime()
@@ -132,8 +136,47 @@ const software_record_add = {
   func: software_add_func,
   desc: '记录上架app'
 }
+
+const software_download_func = async (req, res) => {
+  try {
+    let downloadFilePath = path.join(process.cwd(), `/uploads/uploadApp/${req.body.uploadUserId}/${req.body.fileName}`)
+    let stream = await fileModel.downloadFile(req.body, downloadFilePath)
+    let fileStr = ''
+    let cutArr = req.body.fileName.split('_').slice(1)
+    // 针对用户的名称下划线处理
+    if (cutArr.length > 1) {
+      fileStr = cutArr.join('_')
+    } else {
+      fileStr = cutArr.join('')
+    }
+    let str = `attachment;filename=${encodeURI(fileStr)}`
+    stream.pipe(res)
+    res.setHeader('Content-Disposition', str);
+    res.setHeader('Content-Type', 'application/octet-stream');
+    stream.on('error', (err) => {
+      // 错误处理
+      res.status(500).json(ERROR('File not found or read error'));
+    })
+    res.on('close', () => {
+      if (!stream.destroyed) {
+        stream.destroy(); // 停止读取，避免资源浪费
+      }
+    });
+  } catch (e) {
+    res.status(500).send(ERROR(e.message))
+  }
+}
+
+const software_download = {
+  method: 'post',
+  path: `${routeName}/download`,
+  midFun: [AUTHORIZATION],
+  func: software_download_func,
+}
+
 module.exports = [
   software_list,
   software_upload,
   software_record_add,
+  software_download,
 ]

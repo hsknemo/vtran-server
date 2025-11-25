@@ -20,8 +20,12 @@ class SoftwareModel extends Base {
     this.fileStorePath = join(this.rootPath, '/uploads/uploadApp')
   }
 
-  async getSoftwareList() {
-    return await this.getModelData()
+  async getSoftwareList(query = {}) {
+    let modelData = await this.getModelData()
+    if (query.appName) {
+      return modelData.filter(item => item.appName.includes(query.appName))
+    }
+    return modelData
   }
 
   /**

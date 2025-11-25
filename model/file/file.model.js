@@ -78,8 +78,12 @@ class FileModel extends Base {
     }
   }
 
-  async downloadFile(requestBody) {
+  async downloadFile(requestBody, filePath) {
     let file_path = resolve(process.cwd() + `/uploads/${requestBody.toUserId}/` + requestBody.fileName)
+    if (filePath) {
+      file_path = filePath
+    }
+    console.log(file_path)
     let fileStat = fs.existsSync(file_path)
     if (!fileStat) {
       throw new Error('文件不存在')
