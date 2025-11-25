@@ -76,5 +76,27 @@
         "content": "文件下载时候带下划线问题下载成txt"
       }
     ]
+  },
+  {
+    "id": "8a6573e9-0d0c-4126-9b09-a0fcbe0f7c72",
+    "insertTime": "2025-11-25 17:18:22",
+    "versionTitle": "1.1.7",
+    "versionList": [
+      {
+        "type": "feature",
+        "content": "增加软件商店功能，方便下载更多软件"
+      }
+    ]
+  },
+  {
+    "id": "dbd5a40f-ecdb-4271-a2dd-dcb39f9773fa",
+    "insertTime": "2025-11-25 17:32:23",
+    "versionTitle": "1.1.8",
+    "versionList": [
+      {
+        "type": "feature",
+        "content": "赞助页面增加"
+      }
+    ]
   }
 ]
