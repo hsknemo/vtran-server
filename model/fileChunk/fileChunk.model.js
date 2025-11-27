@@ -72,7 +72,7 @@ class FileChunkModel extends Base {
    * @param fixUpDir 修改最终写入文件的路径
    * @returns {Promise<{msg: string, fileName: string}>}
    */
-  async chunkMerge(mergeConfig, fixUpDir) {
+  async chunkMerge(mergeConfig, fixUpDir = '') {
     let modelData = await this.getModelData()
     let chunkRecord = modelData.filter(item => item.id === mergeConfig.md5Key)
     if (!chunkRecord.length) {

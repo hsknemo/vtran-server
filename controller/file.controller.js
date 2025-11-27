@@ -11,6 +11,7 @@ const eventEmitter = require("../Event");
 const {PROFILE_MESSAGE_EVENT} = require("../Socket/type/socket.event.type");
 const fileChunkModel = require("../model/fileChunk/fileChunk.model")
 const {validatorMiddleware} = require("../middware/Validator");
+const {saveFileChunk, sendFileDownloadResponse} = require("../utils/Js_Tool");
 const routeName = '/file'
 const getRandomStr = () => {
   let str = `asasffvkvsrqeqwcasdad`
@@ -57,7 +58,7 @@ const file_send_func = async (req, res) => {
         writeFile(item, Date.now() + '-' + getRandomStr() + '-' + req.body.name[index], req.body)
       })
     } else {
-      writeFile(req.files.file, Date.now() + '-' + getRandomStr() + req.body.name, req.body)
+      await writeFile(req.files.file, Date.now() + '-' + getRandomStr() + req.body.name, req.body)
     }
 
 
@@ -188,20 +189,23 @@ const file_chunk_upload_func = async (req, res) => {
     let fileName = req.body.fileName
 
     let time = Date.now()
-    const file_path = path.join(process.cwd(), `/uploads/chunk/${userId}`)
-    // console.log('创建文件夹路径', file_path)
-    fs.mkdirSync(file_path, {recursive: true})
-    fs.mkdirSync(file_path + `/${md5Key}`, {recursive: true})
-    let lastPosition = file_path + `/${md5Key}`
-    const chunk_write_path = path.join(lastPosition, `/${chunk_index}_${md5Key}_${time}`)
-    fs.writeFileSync(chunk_write_path, chunk.data, 'binary')
+
+    const uploadBasePath = path.join(process.cwd(), "/uploads/chunk");
+    const chunkWritePath = saveFileChunk({
+      baseDir: uploadBasePath,
+      md5Key,
+      userId,
+      chunkIndex: chunk_index,
+      chunkData: chunk.data,
+      time,
+    });
 
     // 记录切片数据上传状态
     let loaded = await fileChunkModel.chunkSaveAndUpdate({
       id: md5Key,
       toUser: userId,
       fromUser: fromUserId,
-      chunkPath: chunk_write_path,
+      chunkPath: chunkWritePath,
       chunkTotalLen: fileTotalLen,
       chunkSliceNum,
       fileName,
@@ -264,20 +268,10 @@ const file_chunk_merge = {
 const file_download_func = async (req, res) => {
   try {
     let stream = await fileModel.downloadFile(req.body)
-    let fileName = req.body.fileName.split('_')[1]
-    let str = `attachment;filename=${encodeURI(fileName)}`
-    stream.pipe(res)
-    res.setHeader('Content-Disposition', str);
-    res.setHeader('Content-Type', 'application/octet-stream');
-    stream.on('error', (err) => {
-      // 错误处理
-      res.status(500).json(ERROR('File not found or read error'));
-    })
-    res.on('close', () => {
-      if (!stream.destroyed) {
-        stream.destroy(); // 停止读取，避免资源浪费
-      }
-    });
+    let cutArr = req.body.fileName.split('_').slice(1)
+    // 针对用户的名称下划线处理
+    const fileStr = cutArr.length > 1 ? cutArr.join('_') : cutArr.join('');
+    sendFileDownloadResponse(res, stream, fileStr);
   } catch (e) {
     res.status(500).send(ERROR(e.message))
   }

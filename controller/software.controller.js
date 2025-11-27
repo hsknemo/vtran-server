@@ -3,11 +3,11 @@ const {SUCCESS, ERROR} = require("../_requestResponse/setResponse");
 const {AUTHORIZATION} = require("../middware/Authorization");
 const {softwareModel, DefineSoftwareModel} = require("../model/software/software.model");
 const path = require("path");
-const fs = require("fs");
 const fileChunkModel = require("../model/fileChunk/fileChunk.model");
 const {validatorMiddleware} = require("../middware/Validator");
 const userModel = require("../model/user/user.model");
 const { FileModel } = require("../model/file/file.model");
+const {saveFileChunk, sendFileDownloadResponse} = require("../utils/Js_Tool");
 const fileModel = FileModel.new()
 const routeName = '/software'
 const software_list_func = async (req, res) => {
@@ -52,18 +52,29 @@ const software_upload_func = async (req, res) => {
     let chunkSliceNum = req.body.chunkSliceNum
     let fileName = req.body.fileName
     let time = Date.now()
-    const file_path = path.join(process.cwd(), `/uploads/chunk/${userId}`)
-    fs.mkdirSync(file_path, {recursive: true})
-    fs.mkdirSync(file_path + `/${md5Key}`, {recursive: true})
-    let lastPosition = file_path + `/${md5Key}`
-    const chunk_write_path = path.join(lastPosition, `/${chunk_index}_${md5Key}_${time}_uploadApp`)
-    fs.writeFileSync(chunk_write_path, chunk.data, 'binary')
+    // const file_path = path.join(process.cwd(), `/uploads/chunk/${userId}`)
+    // fs.mkdirSync(file_path, {recursive: true})
+    // fs.mkdirSync(file_path + `/${md5Key}`, {recursive: true})
+    // let lastPosition = file_path + `/${md5Key}`
+    // const chunk_write_path = path.join(lastPosition, `/${chunk_index}_${md5Key}_${time}_uploadApp`)
+    // fs.writeFileSync(chunk_write_path, chunk.data, 'binary')
+    // 使用工具函数保存切片
+    const uploadBasePath = path.join(process.cwd(), "/uploads/chunk");
+    const chunkWritePath = saveFileChunk({
+      baseDir: uploadBasePath,
+      md5Key,
+      userId,
+      chunkIndex: chunk_index,
+      chunkData: chunk.data,
+      time,
+      chunkLastPrefix: '_uploadApp'
+    });
     // 记录切片数据上传状态
     let loaded = await fileChunkModel.chunkSaveAndUpdate({
       id: md5Key,
       toUser: userId,
       fromUser: userId,
-      chunkPath: chunk_write_path,
+      chunkPath: chunkWritePath,
       chunkTotalLen: fileTotalLen,
       chunkSliceNum,
       fileName,
@@ -141,27 +152,10 @@ const software_download_func = async (req, res) => {
   try {
     let downloadFilePath = path.join(process.cwd(), `/uploads/uploadApp/${req.body.uploadUserId}/${req.body.fileName}`)
     let stream = await fileModel.downloadFile(req.body, downloadFilePath)
-    let fileStr = ''
     let cutArr = req.body.fileName.split('_').slice(1)
     // 针对用户的名称下划线处理
-    if (cutArr.length > 1) {
-      fileStr = cutArr.join('_')
-    } else {
-      fileStr = cutArr.join('')
-    }
-    let str = `attachment;filename=${encodeURI(fileStr)}`
-    stream.pipe(res)
-    res.setHeader('Content-Disposition', str);
-    res.setHeader('Content-Type', 'application/octet-stream');
-    stream.on('error', (err) => {
-      // 错误处理
-      res.status(500).json(ERROR('File not found or read error'));
-    })
-    res.on('close', () => {
-      if (!stream.destroyed) {
-        stream.destroy(); // 停止读取，避免资源浪费
-      }
-    });
+    const fileStr = cutArr.length > 1 ? cutArr.join('_') : cutArr.join('');
+    sendFileDownloadResponse(res, stream, fileStr);
   } catch (e) {
     res.status(500).send(ERROR(e.message))
   }

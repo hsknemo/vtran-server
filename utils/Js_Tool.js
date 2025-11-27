@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const {sql} = require("../config/mysql");
 const moment = require("moment");
+const {ERROR} = require("../_requestResponse/setResponse");
 
 const isObj = function(params) {
   return Object.prototype.toString.call(params) === '[object Object]'
@@ -75,6 +76,45 @@ const delay = async ms => {
   })
 }
 
+
+/**
+ * 创建多级目录并保存文件块
+ */
+function saveFileChunk({ baseDir, md5Key, userId, chunkIndex, chunkData, time, chunkLastPrefix = '' }) {
+  const userPath = path.join(baseDir, `${userId}`);
+  const md5Path = path.join(userPath, md5Key);
+  fs.mkdirSync(md5Path, { recursive: true });
+
+  const chunkFileName = `${chunkIndex}_${md5Key}_${time}` + `${chunkLastPrefix}`;
+  const chunkWritePath = path.join(md5Path, chunkFileName);
+
+  fs.writeFileSync(chunkWritePath, chunkData, "binary");
+
+  return chunkWritePath;
+}
+
+// 提取为公共函数
+function sendFileDownloadResponse(res, stream, filename) {
+  const encodedFilename = encodeURI(filename);
+  const contentDisposition = `attachment;filename=${encodedFilename}`;
+
+  res.setHeader('Content-Disposition', contentDisposition);
+  res.setHeader('Content-Type', 'application/octet-stream');
+
+  stream.pipe(res);
+
+  stream.on('error', (err) => {
+    res.status(500).json(ERROR('File not found or read error'));
+  });
+
+  res.on('close', () => {
+    if (!stream.destroyed) {
+      stream.destroy();
+    }
+  });
+}
+
+
 module.exports = {
   isObj,
   treeConstructor,
@@ -82,4 +122,6 @@ module.exports = {
   writeAppendSql,
   getRandomStr,
   delay,
+  saveFileChunk,
+  sendFileDownloadResponse,
 }
