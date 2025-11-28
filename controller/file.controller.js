@@ -299,7 +299,7 @@ const file_download = {
 }
 
 module.exports = [
-  file_send,
+  // file_send,
   file_get,
   file_delete,
   file_get_mine,
