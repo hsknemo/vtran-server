@@ -67,6 +67,78 @@ class FileChunkModel extends Base {
   }
 
   /**
+   * 创建按照用户id 创建分片文件夹
+   * @param mergeConfig
+   * @param fixUpDir
+   * @returns {Promise<void>}
+   * @private
+   */
+  async _createUserDir(mergeConfig, fixUpDir = '') {
+    // 创建用户文件夹
+    let user_upload_file_path = path.join(process.cwd(), `/uploads/${mergeConfig.userId}`)
+    if (fixUpDir) {
+      console.log('fixUpDir', fixUpDir)
+      user_upload_file_path = fixUpDir
+    }
+    fs.mkdirSync(`${user_upload_file_path}`, {recursive: true})
+
+    return user_upload_file_path
+  }
+
+  /**
+   * 合并分片文件流
+   * @param fileName
+   * @param pathArray
+   * @returns {Promise<string>}
+   * @private
+   */
+  async _writeFileStream(fileName, pathArray, user_upload_file_path) {
+    let now = Date.now()
+    let writeFileName = `${now}_${fileName}`
+    let writeStream = fs.createWriteStream(user_upload_file_path + '/' + writeFileName)
+
+    pathArray.sort((a, b) => {
+      return a.split('_')[0] - b.split('_')[0]
+    })
+    console.log('根据路径创建读取')
+    for (let i = 0; i < pathArray.length; i++) {
+      const chunkBuffer = fs.readFileSync(pathArray[i]);
+      writeStream.write(chunkBuffer); // 数据可能还在缓冲区
+    }
+
+    writeStream.end();
+
+    return writeFileName
+  }
+
+  /**
+   * 删除chunk文件
+   * @param chunkRecord
+   * @returns {Promise<void>}
+   * @private
+   */
+  async _dropChunkFile(chunkRecord) {
+    let chunk_record_id = chunkRecord[0].id
+    let chunk_path_dir = path.join(process.cwd(), `/uploads/chunk/${chunkRecord[0].toUser}/${chunk_record_id}`)
+    fs.rmdirSync(chunk_path_dir, {recursive: true})
+  }
+
+
+  /**
+   * 当前记录清理
+   * @param modelData
+   * @param chunkRecord
+   * @returns {Promise<void>}
+   * @private
+   */
+  async _currentRecordClear(modelData, chunkRecord) {
+    // chunk 记录清理
+    modelData = modelData.filter(item => item.id !== chunkRecord[0].id)
+    await this.save(modelData)
+  }
+
+
+  /**
    *
    * @param mergeConfig
    * @param fixUpDir 修改最终写入文件的路径
@@ -87,41 +159,21 @@ class FileChunkModel extends Base {
       throw new Error('系统错误， 分片失败，请联系开发者！')
     }
     // 创建用户文件夹
-    let user_upload_file_path = path.join(process.cwd(), `/uploads/${mergeConfig.userId}`)
-    if (fixUpDir) {
-      console.log('fixUpDir', fixUpDir)
-      user_upload_file_path = fixUpDir
-    }
-    fs.mkdirSync(`${user_upload_file_path}`, {recursive: true})
-    let now = Date.now()
+    let user_upload_file_path = await this._createUserDir(mergeConfig, fixUpDir)
     try {
-      let writeFileName = `${now}_${fileName}`
-      let writeStream = fs.createWriteStream(user_upload_file_path + '/' + writeFileName)
-
-      pathArray.sort((a, b) => {
-        return a.split('_')[0] - b.split('_')[0]
-      })
-      console.log('根据路径创建读取')
-      for (let i = 0; i < pathArray.length; i++) {
-        const chunkBuffer = fs.readFileSync(pathArray[i]);
-        writeStream.write(chunkBuffer); // 数据可能还在缓冲区
-      }
-
-      writeStream.end();
+      // 读取记录文件流合并
+      let writeFileName = await this._writeFileStream(fileName, pathArray, user_upload_file_path)
       // 删除chunk 文件
-      let chunk_record_id = chunkRecord[0].id
-      let chunk_path_dir = path.join(process.cwd(), `/uploads/chunk/${chunkRecord[0].toUser}/${chunk_record_id}`)
-      fs.rmdirSync(chunk_path_dir, {recursive: true})
+      await this._dropChunkFile(chunkRecord)
 
       // chunk 记录清理
-      modelData = modelData.filter(item => item.id !== chunkRecord[0].id)
-      await this.save(modelData)
+      await this._currentRecordClear(modelData, chunkRecord)
       return {
         msg: '合并成功',
         fileName: writeFileName
       }
     } catch (e) {
-      console.log(`【error: 】${fileName}------合并失败`)
+      console.log(`【error: 】${e} ${fileName}------合并失败`)
       throw new Error('合并失败')
     }
 
