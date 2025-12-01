@@ -14,5 +14,6 @@ const exportsController = [
   'version.controller',
   'software.controller',
   'category.controller',
+  'issue.controller',
 ];
 module.exports = exportsController;
