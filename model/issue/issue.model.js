@@ -3,6 +3,7 @@ const {resolve, join} = require("node:path");
 const moment = require("moment");
 const fs = require('node:fs')
 const crypto = require('crypto')
+const issueCommentsModel = require('./issueComments.model')
 const DefineIssueModel = function (obj) {
   return {
     id: crypto.randomUUID(),
@@ -19,6 +20,7 @@ const DefineIssueModel = function (obj) {
     uploadImg: [],
   }
 }
+
 class IssueModel extends Base {
   constructor() {
     super();
@@ -108,6 +110,46 @@ class IssueModel extends Base {
     }
 
     return findD
+  }
+
+  async addComments(userId, requestBody) {
+    let modelData = await this.getModelData()
+    let issueId = requestBody.issueId
+    let findData = modelData.filter(item => item.id === issueId)
+    if (!findData.length) {
+      throw new Error('没有找到对应的问题!')
+    }
+
+    await issueCommentsModel.addComments({
+      issueId,
+      content: requestBody.content,
+      fromUser: userId
+    })
+
+    let isSave = false
+    modelData.forEach(item => {
+      if (item.id === issueId) {
+        // 没有评论 则保存一份数据
+        if (!item.issueCommentsId) {
+          isSave = true
+          item.issueCommentsId = requestBody.issueCommentsId
+        }
+      }
+    })
+
+    if (isSave) {
+      await this.save(modelData)
+    }
+    return '添加成功'
+  }
+
+  async findComments(issueId) {
+    return await issueCommentsModel.findComments(issueId)
+  }
+
+  async replyComments(userId, issue_config = {}) {
+    await issueCommentsModel.replyComments(userId, issue_config)
+    return '回复成功'
   }
 }
 
