@@ -13,6 +13,7 @@ class IssueCommentsModel extends Base {
 
   async findComments(issueId) {
     let modelData = await this.getModelData()
+    if (!modelData[issueId]) return {}
     modelData[issueId]['issueId'] = issueId
     return modelData[issueId]
   }

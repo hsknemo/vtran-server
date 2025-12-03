@@ -13,6 +13,7 @@ const main_index = {
   desc: '首页'
 }
 
+
 module.exports = [
-  main_index
+  main_index,
 ]
