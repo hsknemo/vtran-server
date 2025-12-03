@@ -1,4 +1,7 @@
-let {sql, exec, transaction, config} = require('../../config/mysql')
+/**
+ *  用户层数据
+ */
+
 const crypto = require("crypto");
 const fs = require('fs')
 const path = require('path')

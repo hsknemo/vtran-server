@@ -1,3 +1,7 @@
+/**
+ * 事件： 更新用户在线状态
+ * @type {module:events.EventEmitter<DefaultEventMap> | {}}
+ */
 const eventEmitter = require('./index');
 const userModel = require('../model/user/user.model')
 

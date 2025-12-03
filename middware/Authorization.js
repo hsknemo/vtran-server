@@ -1,3 +1,7 @@
+/**
+ * 中间件：验证token
+ * @type {{decode: (function(*, *): (null|{header: *, payload: *, signature: *}))|{}, verify: (function(*, *, *, *): (*))|{}, sign: (function(*, *, *, *): (*|undefined|undefined))|{}, JsonWebTokenError: (function(*, *): void)|{}, NotBeforeError: (function(*, *): void)|{}, TokenExpiredError: (function(*, *): void)|{}}|{decode?: (function(*, *): (null|{header: *, payload: *, signature: *}))|{}, verify?: (function(*, *, *, *): (*))|{}, sign?: (function(*, *, *, *): (*|undefined|undefined))|{}, JsonWebTokenError?: (function(*, *): void)|{}, NotBeforeError?: (function(*, *): void)|{}, TokenExpiredError?: (function(*, *): void)|{}}}
+ */
 const jsonwebtoken = require("jsonwebtoken")
 const secretKey = 'secret_key';
 const _cookie = require('cookie');

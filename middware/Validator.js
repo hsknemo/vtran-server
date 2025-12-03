@@ -1,3 +1,8 @@
+/**
+ * 中间件：验证表单数据
+ *
+ */
+
 const typeValidor = function(val, type) {
     // 更健壮的类型判断，兼容 null/undefined
     if (val === null || val === undefined) return false;
