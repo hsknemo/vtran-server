@@ -1,3 +1,6 @@
+/**
+ * 用户模块
+ */
 const {SUCCESS, ERROR} = require("../_requestResponse/setResponse");
 const userModel = require('../model/user/user.model')
 const {createJwtToken, secretKey, AUTHORIZATION} = require("../middware/Authorization");

@@ -1,3 +1,6 @@
+/**
+ * 叮一叮模块
+ */
 const {AUTHORIZATION} = require("../middware/Authorization");
 const {ERROR, SUCCESS} = require("../_requestResponse/setResponse");
 const routeName = '/ding'

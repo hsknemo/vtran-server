@@ -1,3 +1,6 @@
+/**
+ * 分类模块
+ */
 const {appCategoryModel} = require("../model/category/appCategory.model");
 const {SUCCESS, ERROR} = require("../_requestResponse/setResponse");
 const {AUTHORIZATION} = require("../middware/Authorization");

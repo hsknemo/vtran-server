@@ -1,3 +1,6 @@
+/**
+ * 提个建议模块
+ */
 const {issueModel} = require("../model/issue/issue.model");
 const {SUCCESS, ERROR} = require("../_requestResponse/setResponse");
 const {validatorMiddleware} = require("../middware/Validator");

@@ -1,3 +1,6 @@
+/**
+ * 版本通告模块
+ */
 const {AUTHORIZATION} = require("../middware/Authorization");
 const {ERROR, SUCCESS} = require("../_requestResponse/setResponse");
 const {vesrionModel} = require("../model/version/version.model");

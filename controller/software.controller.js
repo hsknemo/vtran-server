@@ -1,4 +1,6 @@
-// tran 商店
+/**
+ * 商店模块
+ */
 const {SUCCESS, ERROR} = require("../_requestResponse/setResponse");
 const {AUTHORIZATION} = require("../middware/Authorization");
 const {softwareModel, DefineSoftwareModel} = require("../model/software/software.model");

@@ -1,3 +1,6 @@
+/**
+ * 群组模块
+ */
 const { ERROR, SUCCESS} = require("../_requestResponse/setResponse");
 const routeName = '/group'
 const GroupModel = require('../model/group/group.model')
