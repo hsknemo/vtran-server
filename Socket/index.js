@@ -4,6 +4,7 @@ const eventEmitter = require('../Event/index')
 const userEventService = require('../Event/user.event.service')
 const chalk = require('chalk')
 const {ClearUserWs_Event, PROFILE_MESSAGE_EVENT} = require("./type/socket.event.type");
+const {authorizeToken} = require("../middware/Authorization");
 require('dotenv').config();
 require('console-png').attachTo(console);
 let terminalInputTextStyle = new chalk.Chalk()
@@ -26,6 +27,28 @@ module.exports = app => {
 
 
   wss.on('connection', (ws, req) => {
+    let url = new URL(`http://${process.env.HOST ?? 'localhost'}${req.url}`)
+    let urlSchema = new URLSearchParams(url.search)
+    // 验证链接地址
+    if (url.pathname !== '/tranWs') {
+      ws.close()
+    }
+
+    // 验证token
+    if (!urlSchema.get('token')) {
+      ws.close()
+    }
+    // 验证 token有效期
+    try {
+      let verRes = authorizeToken(urlSchema.get('token'))
+      if (verRes === 'jwt expired') {
+        ws.close()
+      }
+    } catch (e) {
+      ws.close()
+    }
+
+
     // 处理消息
     ws.on('message', async evt => {
       try {

@@ -98,5 +98,16 @@
         "content": "赞助页面增加"
       }
     ]
+  },
+  {
+    "id": "06c34261-2ef5-4c04-a31b-c8bd86342496",
+    "insertTime": "2025-12-03 13:57:56",
+    "versionTitle": "1.1.9",
+    "versionList": [
+      {
+        "type": "feature",
+        "content": "issue页面基本完善完成，可以对本站进行评论及bug提出，或者一些新的建议感谢使用VTran"
+      }
+    ]
   }
 ]

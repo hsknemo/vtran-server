@@ -54,12 +54,6 @@ const software_upload_func = async (req, res) => {
     let chunkSliceNum = req.body.chunkSliceNum
     let fileName = req.body.fileName
     let time = Date.now()
-    // const file_path = path.join(process.cwd(), `/uploads/chunk/${userId}`)
-    // fs.mkdirSync(file_path, {recursive: true})
-    // fs.mkdirSync(file_path + `/${md5Key}`, {recursive: true})
-    // let lastPosition = file_path + `/${md5Key}`
-    // const chunk_write_path = path.join(lastPosition, `/${chunk_index}_${md5Key}_${time}_uploadApp`)
-    // fs.writeFileSync(chunk_write_path, chunk.data, 'binary')
     // 使用工具函数保存切片
     const uploadBasePath = path.join(process.cwd(), "/uploads/chunk");
     const chunkWritePath = saveFileChunk({
