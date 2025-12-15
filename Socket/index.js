@@ -58,6 +58,8 @@ module.exports = app => {
       ws.close()
     }
 
+    // 当前链接用户的访问令牌，由前台传递生成，处理用户登录多端 同步推送
+    let accessWebToken = urlSchema.get('curAccessToken')
 
     // 处理消息
     ws.on('message', async evt => {
@@ -71,6 +73,7 @@ module.exports = app => {
             eventEmitter.emit('set-ws-client', {
               ws,
               user,
+              accessWebToken,
               clientId: ws.clientId,
             })
             eventEmitter.emit('update-user', user)
@@ -78,25 +81,30 @@ module.exports = app => {
           // 添加时间戳
           ws.send(JSON.stringify({
             type: 'pong',
+            accessWebToken,
             timestamp: Date.now()
           }))
         }
         if (user.type === 'client-chat-message') {
           eventEmitter.emit('client-chat-message', {
-            user: user.data
+            user: user.data,
+            accessWebToken,
           })
           ws.send(JSON.stringify({
             type: 'chat-end',
+            accessWebToken,
             timestamp: Date.now()
           }))
         }
 
         if (user.type === 'client-chat-group-message') {
           eventEmitter.emit('client-chat-group-message', {
-            user: user.data
+            user: user.data,
+            accessWebToken,
           })
           ws.send(JSON.stringify({
             type: 'chat-group-end',
+            accessWebToken,
             timestamp: Date.now()
           }))
         }
@@ -104,6 +112,7 @@ module.exports = app => {
         console.error('Message parse error:', error);
         ws.send(JSON.stringify({
           type: 'server-error',
+          accessWebToken,
           timestamp: Date.now()
         }))
       }
@@ -114,12 +123,14 @@ module.exports = app => {
       if (ws.clientId) {
         eventEmitter.emit('update-user-onlineStatus', {
           userId: ws.clientId,
-          onlineStatus: false
+          onlineStatus: false,
+          accessWebToken,
         })
 
         eventEmitter.emit(ClearUserWs_Event, {
           userId: ws.clientId,
-          onlineStatus: false
+          onlineStatus: false,
+          accessWebToken,
         })
       }
     })
