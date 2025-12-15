@@ -147,11 +147,11 @@ const software_record_add = {
 const software_download_func = async (req, res) => {
   try {
     let downloadFilePath = path.join(process.cwd(), `/uploads/uploadApp/${req.body.uploadUserId}/${req.body.fileName}`)
-    let stream = await fileModel.downloadFile(req.body, downloadFilePath)
+    let {stream, fileSize } = await fileModel.downloadFile(req.body, downloadFilePath)
     let cutArr = req.body.fileName.split('_').slice(1)
     // 针对用户的名称下划线处理
     const fileStr = cutArr.length > 1 ? cutArr.join('_') : cutArr.join('');
-    sendFileDownloadResponse(res, stream, fileStr);
+    sendFileDownloadResponse(res, stream, fileStr, fileSize);
   } catch (e) {
     res.status(500).send(ERROR(e.message))
   }

@@ -3,9 +3,10 @@
  *
  */
 
-const typeValidor = function(val, type) {
+const typeValidator = function(val, type='String') {
     // 更健壮的类型判断，兼容 null/undefined
     if (val === null || val === undefined) return false;
+    type = String(type).toLowerCase()
     return Object.prototype.toString.call(val) === `[object ${type}]`;
 }
 
@@ -39,7 +40,7 @@ class Validator {
             }
             // 验证类型
             if (item.type && item.value !== undefined && item.value !== null) {
-                if (!typeValidor(item.value, item.type)) {
+                if (!typeValidator(item.value, item.type)) {
                     this.errorCollection.push(`${key}值类型错误 需要类型为 ${item.type}`);
                 }
             }

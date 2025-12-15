@@ -94,13 +94,13 @@ function saveFileChunk({ baseDir, md5Key, userId, chunkIndex, chunkData, time, c
 }
 
 // 提取为公共函数
-function sendFileDownloadResponse(res, stream, filename) {
+function sendFileDownloadResponse(res, stream, filename, fileSize) {
   const encodedFilename = encodeURI(filename);
   const contentDisposition = `attachment;filename=${encodedFilename}`;
 
   res.setHeader('Content-Disposition', contentDisposition);
   res.setHeader('Content-Type', 'application/octet-stream');
-
+  res.setHeader('Content-Length', fileSize);
   stream.pipe(res);
 
   stream.on('error', (err) => {

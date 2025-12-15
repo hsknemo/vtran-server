@@ -109,5 +109,16 @@
         "content": "issue页面基本完善完成，可以对本站进行评论及bug提出，或者一些新的建议感谢使用VTran"
       }
     ]
+  },
+  {
+    "id": "5833dc35-9317-4928-b9b9-9e383d24c7c3",
+    "insertTime": "2025-12-11 16:19:52",
+    "versionTitle": "1.2.0",
+    "versionList": [
+      {
+        "type": "feature",
+        "content": "增加统一下载进度提示"
+      }
+    ]
   }
 ]

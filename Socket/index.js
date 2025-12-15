@@ -9,17 +9,27 @@ require('dotenv').config();
 require('console-png').attachTo(console);
 let terminalInputTextStyle = new chalk.Chalk()
 
+const padding = num => {
+  return new Array(num).fill(' ').join('')
+}
+const greenMsg = (msg, paddingLeft = 2, paddingRight = 2, showBr) => {
+  let pl = padding(paddingLeft)
+  let pr = padding(paddingRight)
+
+  console.log(terminalInputTextStyle.bgGreenBright(terminalInputTextStyle.black(pl + msg + pr)))
+  if (showBr) {
+    console.log('')
+  }
+  return msg.length + paddingLeft + paddingRight
+}
+
 module.exports = app => {
   let server = require('http').createServer(app)
   server.listen(port, () => {
-    // console.png(require('fs').readFileSync(process.cwd() + '/config/project/Tran.png'));
-    console.log(terminalInputTextStyle.black(`🦖【TONE-SOCKET Version 1.0】:`))
-    console.log([
-      '-🦖 配置信息',
-      `-🦖 port: ${process.env.TONE_PORT}`,
-      `-🦖 websocketPort:  ${process.env.WEBSOCKET_PORT}`
-      ].join('\r\n')
-    )
+    let len = greenMsg('🦖 TONE_SERVER VERSION v1.0 LOVE AND PEACE 🦖', 2, 2)
+    greenMsg('端口监听如下：', 2, len - 18)
+    greenMsg(`监听端口在: ${process.env.TONE_PORT}`, 2,len - 20)
+    greenMsg(`webSocket 端口监听在:  ${process.env.WEBSOCKET_PORT}`,2, len - 31)
   })
   let wss = new WebSocket.Server({
     port: process.env.WEBSOCKET_PORT

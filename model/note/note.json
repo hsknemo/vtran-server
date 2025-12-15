@@ -8,15 +8,5 @@
     "createTime": "2025-11-14 08:23:00",
     "updateTime": "2025-12-03 13:54:05",
     "markColor": "gold"
-  },
-  {
-    "id": "bad1f002-e9bf-4c53-b775-cf4c70cab391",
-    "name": "测试",
-    "contentUrl": "1764740505304_tzZabf.md",
-    "userId": "01d4b2e6-d1f4-48c6-bfe9-3635101c6984",
-    "desc": "测试",
-    "createTime": "2024-12-03 13:41:45",
-    "updateTime": "2025-12-03 13:41:45",
-    "markColor": "gold"
   }
 ]

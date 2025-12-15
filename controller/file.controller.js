@@ -270,11 +270,11 @@ const file_chunk_merge = {
 
 const file_download_func = async (req, res) => {
   try {
-    let stream = await fileModel.downloadFile(req.body)
+    let {stream, fileSize } = await fileModel.downloadFile(req.body)
     let cutArr = req.body.fileName.split('_').slice(1)
     // 针对用户的名称下划线处理
     const fileStr = cutArr.length > 1 ? cutArr.join('_') : cutArr.join('');
-    sendFileDownloadResponse(res, stream, fileStr);
+    sendFileDownloadResponse(res, stream, fileStr, fileSize);
   } catch (e) {
     res.status(500).send(ERROR(e.message))
   }

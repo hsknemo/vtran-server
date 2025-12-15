@@ -89,11 +89,13 @@ class FileModel extends Base {
       throw new Error('文件不存在')
     }
 
+    let fileStats =fs.statSync(file_path)
+
     let stream = fs.createReadStream(file_path, {
       highWaterMark: 10 * 1024
     })
 
-    return stream
+    return { stream, fileSize: fileStats.size}
   }
 
 
