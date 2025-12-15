@@ -54,7 +54,6 @@ class FileModel extends Base {
       // 注意这里! 因为上传的路由是用当前发送用户的id 作为文件夹存储的， 所以这边删除的话去删发送用户的目录里面的文件
       await fs.unlinkSync(file_path)
       let modelData = await this.getModelData()
-      console.log('modelData', modelData)
       modelData = modelData.filter(item => item.id !== fileId)
       await this.save(modelData)
       return '删除成功'
