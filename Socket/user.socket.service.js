@@ -5,12 +5,9 @@ const { CALL_USER_REFRESN_EVENT, PROFILE_MESSAGE_EVENT, Chat_CLIENT_MESSAGE_EVEN
 let userMap = new Map()
 
 const sendUserMorePart = (userId, info) => {
-  console.log(userMap, 'userMap')
   for (const u of userMap.entries()) {
     let key = u[0]
-    console.log(u, 'key')
     if (key.includes( userId)) {
-      console.log(u[1], 'uuuuuuuuuuuuuuuu111111111')
       u[1].ws.send(JSON.stringify(info))
     }
   }
