@@ -6,7 +6,6 @@
 const typeValidator = function(val, type='String') {
     // 更健壮的类型判断，兼容 null/undefined
     if (val === null || val === undefined) return false;
-    type = String(type).toLowerCase()
     return Object.prototype.toString.call(val) === `[object ${type}]`;
 }
 
@@ -24,7 +23,7 @@ class Validator {
         throw new Error(errMsg);
     }
 
-    valideListAction() {
+    validListAction() {
         for (let key in this.valideMap) {
             const item = this.valideMap[key];
             // 验证必填
@@ -53,16 +52,16 @@ class Validator {
 }
 
 // Express表单验证中间件工厂
-function validatorMiddleware(valideMapFactory) {
+function validatorMiddleware(validMapFactory) {
     return (req, res, next) => {
-        let valideMap = typeof valideMapFactory === 'function' ? valideMapFactory(req) : valideMapFactory;
-        if (valideMap.debug) {
-            delete valideMap.debug
-            console.log( 'valideMap [debug]: ', valideMap)
+        let validMap = typeof validMapFactory === 'function' ? validMapFactory(req) : validMapFactory;
+        if (validMap.debug) {
+            delete validMap.debug
+            console.log( 'validMap [debug]: ', validMap)
         }
-        const validator = new Validator({ valideMap });
+        const validator = new Validator({ valideMap: validMap });
         try {
-            validator.valideListAction();
+            validator.validListAction();
             next();
         } catch (err) {
             // 返回400错误，防止信息泄露
