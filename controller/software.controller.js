@@ -46,7 +46,7 @@ const software_list = {
 
 const software_upload_func = async (req, res) => {
   try {
-    let userId = req.Token解析结果.id
+    let userId = req.tokenResolveResult.id
     let md5Key = req.body.md5Key
     let chunk_index = req.body.index
     let chunk = req.files.chunk
@@ -98,7 +98,7 @@ const software_upload = {
 const software_add_func = async (req, res) => {
   try {
     let md5Key = req.body.md5Key
-    let userId = req.Token解析结果.id
+    let userId = req.tokenResolveResult.id
     let file = await fileChunkModel.chunkMerge({
       md5Key, userId, fromUserId: userId
     }, path.join(softwareModel.fileStorePath, `/${userId}`))

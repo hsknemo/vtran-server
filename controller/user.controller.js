@@ -70,7 +70,7 @@ const loginUser = {
 
 const getUserAll_func = async (req, res) => {
   try {
-    let user = req.Token解析结果
+    let user = req.tokenResolveResult
     let data = await userModel.findUserAll(user)
     res.send(SUCCESS(data))
   } catch (e) {
@@ -88,7 +88,7 @@ const getUserAll = {
 
 const upload_profile_func = async (req, res) => {
   try {
-    let user = req.Token解析结果
+    let user = req.tokenResolveResult
     let data = await userModel.uploadProfile(user, req)
     res.send(SUCCESS(data))
   } catch (e) {
@@ -105,7 +105,7 @@ const upload_profile = {
 
 const find_profile_func = async (req, res) => {
   try {
-    let user = req.Token解析结果
+    let user = req.tokenResolveResult
     let data = await userModel.findUserById(user.id)
     res.send(SUCCESS(data))
   } catch (e) {

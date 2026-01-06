@@ -43,7 +43,7 @@ const group_create = {
 
 const group_find_func = async (req, res) => {
   try {
-    let userId = req.Token解析结果.id
+    let userId = req.tokenResolveResult.id
     let data = await groupModel.findOwnInnerGroup(userId)
     res.send(SUCCESS(data))
   } catch (e) {

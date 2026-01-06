@@ -9,7 +9,7 @@ let userModel = require('../model/user/user.model')
 const {validatorMiddleware} = require("../middware/Validator");
 const ding_add_func = async (req, res) => {
   try {
-    let userId = req.Token解析结果.id
+    let userId = req.tokenResolveResult.id
     let data = await dingModel.saveModel(req.body, userId, req.body.toUserId)
     res.send(SUCCESS(data))
   } catch (e) {
@@ -41,7 +41,7 @@ const ding_add = {
 
 const ding_find_user_func = async (req, res) => {
   try {
-    let userId = req.Token解析结果.id
+    let userId = req.tokenResolveResult.id
     let data = await dingModel.findMyDing(userId)
     if (data.length) {
       let user = await userModel.findUserPool(data.map(item => item.fromUser))
@@ -67,7 +67,7 @@ const ding_find_user = {
 
 const ding_delete_func = async (req, res) => {
   try {
-    let userId = req.Token解析结果.id
+    let userId = req.tokenResolveResult.id
     let data = await dingModel.deleteDing(userId, req.body)
     res.send(SUCCESS(data))
   } catch (e) {

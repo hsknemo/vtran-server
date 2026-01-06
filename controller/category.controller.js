@@ -26,7 +26,7 @@ const category_list = {
 const category_add_func = async (req, res) => {
   try {
     let category = req.body
-    category.categoryCreateUser = req.Token解析结果.id
+    category.categoryCreateUser = req.tokenResolveResult.id
     await appCategoryModel.saveCategory(category)
     res.send(SUCCESS())
   } catch (e) {

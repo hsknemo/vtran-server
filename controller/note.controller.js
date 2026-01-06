@@ -9,7 +9,7 @@ const {NoteModel} = require('../model/note/note.model')
 const noteModel = NoteModel.new()
 const note_get_func = async (req, res) => {
   try {
-    let userId = req.Token解析结果.id
+    let userId = req.tokenResolveResult.id
     let data = await noteModel.findNotePool(userId)
     res.send(SUCCESS(data))
   } catch (e) {
@@ -26,7 +26,7 @@ const note_get = {
 
 const note_save_func = async (req, res) => {
   try {
-    let userId = req.Token解析结果.id
+    let userId = req.tokenResolveResult.id
     let data = await noteModel.saveNoteModel(userId, req.body)
     res.send(SUCCESS(data))
   } catch (e) {
@@ -61,7 +61,7 @@ const note_save = {
  */
 const note_get_one_func = async (req, res) => {
   try {
-    let userId = req.Token解析结果.id
+    let userId = req.tokenResolveResult.id
     let stream = await noteModel.findNoteByFileName(userId, req.body.fileName)
 
     res.setHeader('Transfer-Encoding', 'chunked'); // 分块传输
@@ -98,7 +98,7 @@ const note_get_one = {
 
 const note_update_func = async (req, res) => {
   try {
-    let userId = req.Token解析结果.id
+    let userId = req.tokenResolveResult.id
     let data = await noteModel.updateNoteModel(userId, req.body)
     res.send(SUCCESS(data))
   } catch (e) {
@@ -132,7 +132,7 @@ const note_update = {
 
 const note_delete_func = async (req, res) => {
   try {
-    let userId = req.Token解析结果.id
+    let userId = req.tokenResolveResult.id
     let data = await noteModel.deleteNoteModel(userId, req.body)
     res.send(SUCCESS(data))
   } catch (e) {

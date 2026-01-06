@@ -25,7 +25,7 @@ const issue_list = {
 
 const issue_add_func = async (req, res) => {
   try {
-    let userId = req.Token解析结果.id
+    let userId = req.tokenResolveResult.id
     let data = await issueModel.addIssue(userId, req.body, req.files?.imgs)
     res.send(SUCCESS(data))
   } catch (e) {
@@ -81,7 +81,7 @@ const issue_find = {
 
 const issue_comments_add_func = async (req, res) => {
   try {
-    let userId = req.Token解析结果.id
+    let userId = req.tokenResolveResult.id
     let data = await issueModel.addComments(userId, req.body)
     res.send(SUCCESS(data))
   } catch (e) {
@@ -130,7 +130,7 @@ const issue_comments_find = {
 
 const issue_comments_reply_func = async (req, res) => {
   try {
-    let userId = req.Token解析结果.id
+    let userId = req.tokenResolveResult.id
     let data = await issueModel.replyComments(userId, req.body)
     res.send(SUCCESS(data))
   } catch (e) {

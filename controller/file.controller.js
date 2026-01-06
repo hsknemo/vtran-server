@@ -86,7 +86,7 @@ const file_send = {
 
 const getFile_func = async (req, res) => {
   try {
-    let userId = req.Token解析结果.id
+    let userId = req.tokenResolveResult.id
     let fileList = await fileModel.getFileListByUserId(userId)
     if (fileList.length) {
       for (let i = 0; i < fileList.length; i++) {
@@ -115,7 +115,7 @@ const file_get = {
 
 const file_delete_func = async (req, res) => {
   try {
-    let userId = req.Token解析结果.id
+    let userId = req.tokenResolveResult.id
     let fileId = req.body.fileId
     let data = await fileModel.deleteFileById(userId, fileId)
     res.send(SUCCESS(data))
@@ -134,15 +134,23 @@ const file_delete = {
 
 const getFile_func_mine = async (req, res) => {
   try {
-    let userId = req.Token解析结果.id
+    let userId = req.tokenResolveResult.id
     let fileList = await fileModel.getFileListByFromUserId(userId)
     if (fileList.length) {
-      for (let i = 0; i < fileList.length; i++) {
-        let item = fileList[i]
-        let user = await userModel.findUserById(item.toUser)
-        if (user.length) {
-          fileList[i].toUserName = user[0].username
-        }
+      const fromUserIds = [...new Set(fileList.map(item => item.fromUser))].filter(id => id);
+      if (fromUserIds.length > 0) {
+        const users = await userModel.findUserPool(fromUserIds);
+        const userMap = new Map();
+        users.forEach(user => {
+          userMap.set(user.id, user.username);
+        });
+
+        fileList.forEach(item => {
+          const username = userMap.get(item.fromUser);
+          if (username) {
+            item.fromUserName = username;
+          }
+        });
       }
     }
     fileList.sort((a, b) => {
@@ -164,7 +172,7 @@ const file_get_mine = {
 
 const file_get_double_func = async (req, res) => {
   try {
-    let userId = req.Token解析结果.id
+    let userId = req.tokenResolveResult.id
     let fileList = await fileModel.getDoubleUser(userId, req.body)
     res.send(SUCCESS(fileList))
   } catch (e) {

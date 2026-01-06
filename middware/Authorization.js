@@ -23,7 +23,7 @@ const AUTHORIZATION = async (req, res, next) => {
     let verRes = authorizeToken(token)
 
     if (verRes !== 'jwt expired') {
-      req.Token解析结果 = verRes
+      req.tokenResolveResult = verRes
       next()
     } else {
       throw new Error('token expired')
