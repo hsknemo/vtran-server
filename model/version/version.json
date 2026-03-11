@@ -142,5 +142,20 @@
         "content": "聊天界面功能改造：取消表情面板，替换成颜文字面板表情使用"
       }
     ]
+  },
+  {
+    "id": "2c513ee9-0c47-4699-a7c2-815722972dac",
+    "insertTime": "2026-03-11 14:29:26",
+    "versionTitle": "1.2.3",
+    "versionList": [
+      {
+        "type": "feature",
+        "content": "聊天界面优化"
+      },
+      {
+        "type": "feature",
+        "content": "聊天通知点击跳转到界面"
+      }
+    ]
   }
 ]
