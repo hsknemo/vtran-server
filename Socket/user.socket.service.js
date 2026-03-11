@@ -2,6 +2,10 @@ const eventEmitter = require('../Event/index')
 const { CALL_USER_REFRESN_EVENT, PROFILE_MESSAGE_EVENT, Chat_CLIENT_MESSAGE_EVENT, Chat_GROUP_MESSAGE_EVENT,
   Chat_Group_Add_User_Event, ClearUserWs_Event
 } = require("./type/socket.event.type");
+const crypto = require("crypto");
+const moment = require("moment");
+
+
 let userMap = new Map()
 
 const sendUserMorePart = (userId, info) => {
@@ -61,6 +65,8 @@ eventEmitter.on(Chat_CLIENT_MESSAGE_EVENT, (client) => {
       sendMsg: client.user.sendMsg,
       session_id: client.user.session_id,
       fromUser: client.user.from,
+      uuid: crypto.randomUUID(),
+      time: moment().format('YYYY-MM-DD HH:mm')
     }
   })
 })
