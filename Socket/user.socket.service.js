@@ -89,6 +89,8 @@ eventEmitter.on(Chat_GROUP_MESSAGE_EVENT, (client) => {
         sendMsg: client.user.sendMsg,
         session_id: client.user.session_id,
         fromUser: client.user.from,
+        uuid: crypto.randomUUID(),
+        time: moment().format('YYYY-MM-DD HH:mm')
       }
     })
   })
@@ -100,7 +102,7 @@ eventEmitter.on(Chat_Group_Add_User_Event, groupData => {
       type: Chat_Group_Add_User_Event,
       data: {
         name: groupData.name,
-        userId: item,
+        userId: userId,
         createUserId: groupData.createUserId,
       }
     })

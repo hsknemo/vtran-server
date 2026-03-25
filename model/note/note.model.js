@@ -138,4 +138,21 @@ module.exports.NoteModel = class NoteModel extends Base {
     return stream
   }
 
+  /**
+   * @description 导出便签文件
+   * @param userId
+   * @param fileName 文件名称
+   * @returns {object} 文件信息
+   */
+  async exportNoteByFileName(userId, fileName) {
+    // 是否存在文件夹
+    let hasFile = await this.hasFile(userId, fileName)
+
+    if (!hasFile.isHasFile) {
+      throw new Error('文件不存在');
+    }
+
+    return hasFile
+  }
+
 }
