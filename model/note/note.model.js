@@ -26,6 +26,8 @@ const DefineNoteModel = function (args = {}) {
     updateTime: args.updateTime,
     // 标记颜色
     markColor: args.markColor || 'gold',
+    // 是否允许被全站检索
+    searchable: !!args.searchable,
   }
 }
 // 定义 Note 数据模型
@@ -76,6 +78,7 @@ module.exports.NoteModel = class NoteModel extends Base {
     modelData.updateTime = moment().format('YYYY-MM-DD HH:mm:ss')
     modelData.createTime = modelData.createTime || moment().format('YYYY-MM-DD HH:mm:ss')
     modelData.userId = userId
+    modelData.searchable = !!modelData.searchable
     if (modelData.content) {
       modelData.contentUrl = await this.saveOrUpdateNoteFileForUser(modelData.userId, modelData.content)
     }
@@ -101,6 +104,28 @@ module.exports.NoteModel = class NoteModel extends Base {
     })
     fs.writeFileSync(this.filePath, JSON.stringify(modelData, null, 2), 'utf-8')
     return '更新成功'
+  }
+
+  async updateNoteSearchable(userId, requestBody) {
+    let modelData = await this.getModelData()
+    let hasTarget = false
+    modelData.forEach(item => {
+      if (item.id === requestBody.id && item.userId === userId) {
+        hasTarget = true
+        item.searchable = !!requestBody.searchable
+        item.updateTime = moment().format('YYYY-MM-DD HH:mm:ss')
+      }
+    })
+    if (!hasTarget) {
+      throw new Error('便签不存在')
+    }
+    fs.writeFileSync(this.filePath, JSON.stringify(modelData, null, 2), 'utf-8')
+    return '更新检索状态成功'
+  }
+
+  async findSearchableNotePool() {
+    let modelData = await this.getModelData()
+    return modelData.filter(item => !!item.searchable)
   }
 
   async hasFile(userId, fileName) {

@@ -7,6 +7,7 @@ const { ERROR, SUCCESS } = require("../_requestResponse/setResponse");
 const fs = require("fs");
 const routeName = "/note";
 const { NoteModel } = require("../model/note/note.model");
+const userModel = require("../model/user/user.model");
 const noteModel = NoteModel.new();
 const note_get_func = async (req, res) => {
   try {
@@ -137,6 +138,62 @@ const note_update = {
   func: note_update_func,
 };
 
+const note_switch_searchable_func = async (req, res) => {
+  try {
+    let userId = req.tokenResolveResult.id;
+    let data = await noteModel.updateNoteSearchable(userId, req.body);
+    res.send(SUCCESS(data));
+  } catch (e) {
+    res.send(ERROR(e.message));
+  }
+};
+const note_switch_searchable = {
+  method: "post",
+  path: `${routeName}/searchable/update`,
+  midFun: [
+    AUTHORIZATION,
+    validatorMiddleware((req) => ({
+      id: {
+        required: true,
+        type: "String",
+        value: req.body.id,
+      },
+      searchable: {
+        required: true,
+        type: "Boolean",
+        value: req.body.searchable,
+      },
+    })),
+  ],
+  func: note_switch_searchable_func,
+  desc: "更新便签可检索状态",
+};
+
+const note_searchable_list_func = async (req, res) => {
+  try {
+    let data = await noteModel.findSearchableNotePool();
+    let users = await userModel.getUser();
+    let userMap = {};
+    users.forEach((item) => {
+      userMap[item.id] = item.username || item.id;
+    });
+    let withSharedUser = data.map((item) => ({
+      ...item,
+      sharedBy: userMap[item.userId] || item.userId,
+    }));
+    res.send(SUCCESS(withSharedUser));
+  } catch (e) {
+    res.send(ERROR(e.message));
+  }
+};
+const note_searchable_list = {
+  method: "get",
+  path: `${routeName}/searchable/list`,
+  midFun: [AUTHORIZATION],
+  func: note_searchable_list_func,
+  desc: "获取可检索便签列表",
+};
+
 const note_delete_func = async (req, res) => {
   try {
     let userId = req.tokenResolveResult.id;
@@ -220,6 +277,8 @@ module.exports = [
   note_save,
   note_get_one,
   note_update,
+  note_switch_searchable,
+  note_searchable_list,
   note_delete,
   note_export,
 ];

@@ -42,20 +42,24 @@ module.exports = app => {
     // 验证链接地址
     if (url.pathname !== '/tranWs') {
       ws.close()
+      return
     }
 
     // 验证token
     if (!urlSchema.get('token')) {
       ws.close()
+      return
     }
     // 验证 token有效期
     try {
       let verRes = authorizeToken(urlSchema.get('token'))
       if (verRes === 'jwt expired') {
         ws.close()
+        return
       }
     } catch (e) {
       ws.close()
+      return
     }
 
     // 当前链接用户的访问令牌，由前台传递生成，处理用户登录多端 同步推送
@@ -86,6 +90,16 @@ module.exports = app => {
           }))
         }
         if (user.type === 'client-chat-message') {
+          // 修复：兼容“首条消息早于首次心跳”的场景，先兜底绑定当前 ws 到发送用户
+          if (!ws.clientId && user?.data?.from?.id) {
+            ws.clientId = user.data.from.id
+            eventEmitter.emit('set-ws-client', {
+              ws,
+              user: user.data.from,
+              accessWebToken,
+              clientId: ws.clientId,
+            })
+          }
           eventEmitter.emit('client-chat-message', {
             user: user.data,
             accessWebToken,
@@ -98,6 +112,16 @@ module.exports = app => {
         }
 
         if (user.type === 'client-chat-group-message') {
+          // 修复：群聊消息同样增加兜底绑定，避免连接刚建立时广播目标丢失
+          if (!ws.clientId && user?.data?.from?.id) {
+            ws.clientId = user.data.from.id
+            eventEmitter.emit('set-ws-client', {
+              ws,
+              user: user.data.from,
+              accessWebToken,
+              clientId: ws.clientId,
+            })
+          }
           eventEmitter.emit('client-chat-group-message', {
             user: user.data,
             accessWebToken,
