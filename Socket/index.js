@@ -1,11 +1,13 @@
 var WebSocket = require('ws')
 const {port} = require("../config/Port");
+const path = require("path");
 const eventEmitter = require('../Event/index')
 const userEventService = require('../Event/user.event.service')
 const chalk = require('chalk')
 const {ClearUserWs_Event} = require("./type/socket.event.type");
 const {authorizeToken} = require("../middware/Authorization");
 require('dotenv').config();
+require('dotenv').config({ path: path.resolve(__dirname, "../.env") });
 require('console-png').attachTo(console);
 let terminalInputTextStyle = new chalk.Chalk()
 
@@ -24,15 +26,20 @@ const greenMsg = (msg, paddingLeft = 2, paddingRight = 2, showBr) => {
 }
 
 module.exports = app => {
+  const wsPort = Number(process.env.WEBSOCKET_PORT || 9998)
+  if (!Number.isInteger(wsPort) || wsPort <= 0) {
+    throw new Error(`Invalid WEBSOCKET_PORT: ${process.env.WEBSOCKET_PORT}`)
+  }
+
   let server = require('http').createServer(app)
   server.listen(port, () => {
     let len = greenMsg('🦖 TONE_SERVER VERSION v1.0 LOVE AND PEACE 🦖', 2, 2)
     greenMsg('端口监听如下：', 2, len - 18)
     greenMsg(`监听端口在: ${process.env.TONE_PORT}`, 2,len - 20)
-    greenMsg(`webSocket 端口监听在:  ${process.env.WEBSOCKET_PORT}`,2, len - 31)
+    greenMsg(`webSocket 端口监听在:  ${wsPort}`,2, len - 31)
   })
   let wss = new WebSocket.Server({
-    port: process.env.WEBSOCKET_PORT
+    port: wsPort
   })
 
 

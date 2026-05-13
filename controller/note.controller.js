@@ -66,8 +66,36 @@ const note_save = {
  */
 const note_get_one_func = async (req, res) => {
   try {
-    let userId = req.tokenResolveResult.id;
-    let stream = await noteModel.findNoteByFileName(userId, req.body.fileName);
+    let loginUserId = req.tokenResolveResult.id;
+    let ownerUserId = req.body.userId;
+    let fileName = req.body.fileName;
+
+    // 兼容前端未传或传错 userId：优先本人，其次按公开便签反查分享人
+    if (!ownerUserId) {
+      let ownFile = await noteModel.hasFile(loginUserId, fileName);
+      if (ownFile && ownFile.isHasFile) {
+        ownerUserId = loginUserId;
+      } else {
+        ownerUserId = await noteModel.findSearchableOwnerByFileName(fileName);
+      }
+    }
+
+    if (!ownerUserId) {
+      throw new Error("文件不存在");
+    }
+
+    // 查看他人便签时，必须是公开便签
+    if (ownerUserId !== loginUserId) {
+      let isSearchable = await noteModel.isUserSearchableNote(
+        ownerUserId,
+        fileName,
+      );
+      if (!isSearchable) {
+        throw new Error("该便签不存在或未公开");
+      }
+    }
+
+    let stream = await noteModel.findNoteByFileName(ownerUserId, fileName);
 
     res.setHeader("Transfer-Encoding", "chunked"); // 分块传输
     res.setHeader("Content-Type", "application/octet-stream");
@@ -97,6 +125,11 @@ const note_get_one = {
         required: true,
         type: "String",
         value: req.body.fileName,
+      },
+      userId: {
+        required: false,
+        type: "String",
+        value: req.body.userId,
       },
     })),
   ],

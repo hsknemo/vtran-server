@@ -15,5 +15,6 @@ const exportsController = [
   'software.controller',
   'category.controller',
   'issue.controller',
+  'contract.controller',
 ];
 module.exports = exportsController;

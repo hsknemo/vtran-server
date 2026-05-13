@@ -23,6 +23,7 @@ class UserModel extends Base{
         return new this()
     }
 
+
     async checkUserIsExitById(user) {
         return new Promise(async (resolve, reject) => {
             let isHasUser =  false

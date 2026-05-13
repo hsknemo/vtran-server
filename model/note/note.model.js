@@ -128,6 +128,28 @@ module.exports.NoteModel = class NoteModel extends Base {
     return modelData.filter(item => !!item.searchable)
   }
 
+  /**
+   * @description 判断目标文件是否为用户公开便签
+   * @param userId
+   * @param fileName
+   * @returns {boolean}
+   */
+  async isUserSearchableNote(userId, fileName) {
+    let modelData = await this.getModelData()
+    return modelData.some(item => item.userId === userId && item.contentUrl === fileName && !!item.searchable)
+  }
+
+  /**
+   * @description 根据公开便签文件名反查分享人
+   * @param fileName
+   * @returns {string|null}
+   */
+  async findSearchableOwnerByFileName(fileName) {
+    let modelData = await this.getModelData()
+    let target = modelData.find(item => item.contentUrl === fileName && !!item.searchable)
+    return target ? target.userId : null
+  }
+
   async hasFile(userId, fileName) {
     // 是否存在文件夹
     if (!fs.existsSync(resolve(process.cwd() + `/model/note/user_note/${userId}`))) {

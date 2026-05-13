@@ -1,3 +1,4 @@
+const { ERROR_CODE } = require("../_requestResponse/setResponse");
 /**
  * 中间件：验证表单数据
  *
@@ -64,8 +65,8 @@ function validatorMiddleware(validMapFactory) {
             validator.validListAction();
             next();
         } catch (err) {
-            // 返回400错误，防止信息泄露
-            res.status(400).json({ code: 400, msg: err.message });
+            // 返回统一契约结构，兼容旧字段
+            res.status(400).json(ERROR_CODE(400, err.message));
         }
     };
 }

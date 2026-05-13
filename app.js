@@ -15,6 +15,8 @@ const { beautiLog } = require("./log/beautifulLog");
 const log4j = require("./logControl/index");
 const md5 = require("md5");
 const socket = require('./Socket/index')
+// 定时任务
+const cronTask = require('./cron/index')
 
 // const http = require("http").createServer(app);
 // const io = require("socket.io")(http);
@@ -74,5 +76,8 @@ app.all("*", function (req, res, next) {
 // api 路由注册
 app.use(router);
 socket(app)
+
+// 定时任务
+cronTask()
 
 module.exports = app;

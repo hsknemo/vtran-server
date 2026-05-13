@@ -12,3 +12,4 @@ model/group/group.json
 model/file/file.json
 model/fileChunk/chunk.json
 .history
+model/*.json
