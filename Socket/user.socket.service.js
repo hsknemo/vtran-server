@@ -4,15 +4,30 @@ const { CALL_USER_REFRESN_EVENT, PROFILE_MESSAGE_EVENT, Chat_CLIENT_MESSAGE_EVEN
 } = require("./type/socket.event.type");
 const crypto = require("crypto");
 const moment = require("moment");
+const WebSocket = require("ws");
 
 
 let userMap = new Map()
 
 const sendUserMorePart = (userId, info) => {
-  for (const u of userMap.entries()) {
-    let key = u[0]
-    if (key.includes( userId)) {
-      u[1].ws.send(JSON.stringify(info))
+  const targetUserId = String(userId)
+  const payload = JSON.stringify(info)
+
+  for (const [key, client] of userMap.entries()) {
+    let clientId = String(client?.clientId || client?.user?.id || '')
+    if (clientId !== targetUserId) {
+      continue
+    }
+
+    if (!client?.ws || client.ws.readyState !== WebSocket.OPEN) {
+      userMap.delete(key)
+      continue
+    }
+
+    try {
+      client.ws.send(payload)
+    } catch (e) {
+      userMap.delete(key)
     }
   }
 }
@@ -117,4 +132,3 @@ eventEmitter.on(ClearUserWs_Event, groupData => {
   }
   console.log(`剔除用户后 ${ groupData.userId}`, userMap.keys())
 })
-

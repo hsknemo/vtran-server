@@ -10,6 +10,7 @@ require('dotenv').config();
 require('dotenv').config({ path: path.resolve(__dirname, "../.env") });
 require('console-png').attachTo(console);
 let terminalInputTextStyle = new chalk.Chalk()
+const ONLINE_STATUS_SYNC_INTERVAL = 30 * 1000
 
 const padding = num => {
   return new Array(num).fill(' ').join('')
@@ -23,6 +24,25 @@ const greenMsg = (msg, paddingLeft = 2, paddingRight = 2, showBr) => {
     console.log('')
   }
   return msg.length + paddingLeft + paddingRight
+}
+
+const setWsClient = (ws, user, accessWebToken) => {
+  ws.clientId = user.id
+  eventEmitter.emit('set-ws-client', {
+    ws,
+    user,
+    accessWebToken,
+    clientId: ws.clientId,
+  })
+}
+
+const syncOnlineStatus = (ws, user) => {
+  const now = Date.now()
+  if (ws.lastOnlineStatusSyncAt && now - ws.lastOnlineStatusSyncAt < ONLINE_STATUS_SYNC_INTERVAL) {
+    return
+  }
+  ws.lastOnlineStatusSyncAt = now
+  eventEmitter.emit('update-user', user)
 }
 
 module.exports = app => {
@@ -58,9 +78,10 @@ module.exports = app => {
       return
     }
     // 验证 token有效期
+    let tokenUser = null
     try {
-      let verRes = authorizeToken(urlSchema.get('token'))
-      if (verRes === 'jwt expired') {
+      tokenUser = authorizeToken(urlSchema.get('token'))
+      if (tokenUser === 'jwt expired') {
         ws.close()
         return
       }
@@ -71,23 +92,24 @@ module.exports = app => {
 
     // 当前链接用户的访问令牌，由前台传递生成，处理用户登录多端 同步推送
     let accessWebToken = urlSchema.get('curAccessToken')
+    let ip = req.headers['x-real-ip'] || req.connection.remoteAddress
+
+    // 连接建立成功后立即登记用户，避免依赖客户端首次 ping 才能收到消息。
+    if (tokenUser?.id) {
+      tokenUser.ip = ip
+      setWsClient(ws, tokenUser, accessWebToken)
+      syncOnlineStatus(ws, tokenUser)
+    }
 
     // 处理消息
     ws.on('message', async evt => {
       try {
         let user = JSON.parse(evt.toString())
-        let ip = req.headers['x-real-ip'] || req.connection.remoteAddress
         user.ip = ip
         if (user.type === 'ping') {
           if (user.id) {
-            ws.clientId = user.id || crypto.randomUUID()
-            eventEmitter.emit('set-ws-client', {
-              ws,
-              user,
-              accessWebToken,
-              clientId: ws.clientId,
-            })
-            eventEmitter.emit('update-user', user)
+            setWsClient(ws, user, accessWebToken)
+            syncOnlineStatus(ws, user)
           }
           // 添加时间戳
           ws.send(JSON.stringify({
