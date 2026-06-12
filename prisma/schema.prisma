@@ -102,3 +102,48 @@ model IssueTalk {
   uploadFilePathArr  String @db.LongText // 问题上传路径
   issueId String // 问题表id
 }
+model IssueTalkReply {
+  id    String    @id
+  insertTime DateTime @default(now()) // 创建时间
+  content   String? @db.LongText // 讨论内容
+  uploadFilePathArr  String @db.LongText // 问题上传路径
+  issueTalkId String // 问题讨论表id
+}
+
+model Note {
+  id    String    @id
+  insertTime DateTime @default(now())
+  name  String // 名称
+  desc  String // 描述
+  updateTime DateTime @updatedAt
+  userId String
+  searchable Boolean
+  markColor String
+  contentUrl   String? @db.LongText
+}
+
+model Software {
+  id    String    @id
+  insertTime DateTime @default(now())
+  appUploadUser  String
+  appName  String
+  appDesc DateTime @updatedAt
+  appCategory String
+  appRealName String @db.LongText
+}
+
+model Version {
+  id    String    @id
+  insertTime DateTime @default(now())
+  versionTitle String
+}
+
+model VersionList {
+  id    String    @id
+  insertTime DateTime @default(now())
+  versionId String
+  versionType  String
+  versionContent  String @db.LongText
+}
+
+
