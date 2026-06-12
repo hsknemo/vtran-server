@@ -1,0 +1,104 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// 用户表
+model User {
+  id    String    @id
+  username  String
+  insertTime DateTime @default(now())
+  updateTime DateTime @updatedAt
+  ip      String
+  heartbeat  DateTime
+}
+
+// 分类表
+model Category {
+  id    String    @id
+  insertTime DateTime @default(now())
+  categoryName  String
+  categoryCreateUser String
+}
+
+// 叮叮表
+model Ding {
+  id    String    @id
+  insertTime DateTime @default(now())
+  dingMsg   String? @db.LongText
+  toUser String
+  fromUser String
+}
+
+// 文件表
+model File {
+  id    String    @id
+  insertTime DateTime @default(now())
+  fileName   String? @db.LongText
+  toUser String
+  fromUser String
+}
+
+// 上传文件记录状态表
+model FileChunk {
+  id    String    @id
+  insertTime DateTime @default(now())
+  fileName   String? @db.LongText
+  toUser String
+  fromUser String
+  chunkTotalLen  Int
+  updateTime DateTime @updatedAt
+  fileIsUploaded  Boolean
+  chunkPathArr  String @db.LongText
+}
+
+// 聊天群组表
+model ChatGroup {
+  id    String    @id
+  insertTime DateTime @default(now())
+  groupName  String
+  groupCreateUser String
+}
+
+model ChatGroupMessage {
+  id    String    @id
+  insertTime DateTime @default(now())
+  groupId String // 所属群组id
+  userId String // 用户id
+  content   String? @db.LongText // 内容
+  filePath  String? @db.LongText // 上传文件路径
+  contentType  String // 内容类型
+}
+
+// 聊天群组用户表
+model ChatGroupUser {
+  id    String    @id
+  insertTime DateTime @default(now())
+  groupId String // 所属群组id
+}
+
+// 问题表
+model Issue {
+  id    String    @id
+  insertTime DateTime @default(now())
+  issueType  String // 问题类型
+  createUser String // 创建人
+}
+
+// 问题讨论表
+model IssueTalk {
+  id    String    @id
+  insertTime DateTime @default(now()) // 创建时间
+  content   String? @db.LongText // 讨论内容
+  uploadFilePathArr  String @db.LongText // 问题上传路径
+  issueId String // 问题表id
+}
