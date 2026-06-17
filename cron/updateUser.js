@@ -1,24 +1,20 @@
 const cron = require('node-cron');
-const moment = require('moment');
-const userModel = require("../model/user/user.model");
-
+const {userRedis} = require("../redis/userRedis");
+const moment = require("moment");
 
 
 const updateUserOnlineStatusCron = () => {
   // 每 10 秒执行一次任务
-  cron.schedule('*/10 * * * * *', () => {
+  cron.schedule('*/10 * * * * *', async () => {
     console.log('每10秒执行一次 →', new Date().toLocaleString());
-    userModel.getUser().then(async (users) => {
-      users.forEach(item => {
-        let diff = moment().diff(moment(item.updateTime), 'second')
-        delete item.headerBeatTime
-        item.heartBeatTime = moment().format('YYYY-MM-DD HH:mm:ss')
-        if (diff > 5000) {
-          item.isOnline = false
-        }
-      })
-      await userModel.save(users)
-    });
+    let user = await userRedis.getUser()
+    for (const userKey in user) {
+      let item = user[userKey]
+      let diff = moment().diff(moment(item.heartBeatTime), 'second')
+      item.heartBeatTime = moment().format('YYYY-MM-DD HH:mm:ss')
+      item.isOnline = diff <= 5000
+    }
+    userRedis.saveUser(user)
   });
 };
 

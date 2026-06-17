@@ -5,6 +5,7 @@ const { CALL_USER_REFRESN_EVENT, PROFILE_MESSAGE_EVENT, Chat_CLIENT_MESSAGE_EVEN
 const crypto = require("crypto");
 const moment = require("moment");
 const WebSocket = require("ws");
+const {userRedis} = require("../redis/userRedis");
 
 
 let userMap = new Map()
@@ -130,5 +131,6 @@ eventEmitter.on(ClearUserWs_Event, groupData => {
   if (userMap.has(key)) {
     userMap.delete(key)
   }
+  userRedis.deleteUserById(groupData.userId)
   console.log(`剔除用户后 ${ groupData.userId}`, userMap.keys())
 })

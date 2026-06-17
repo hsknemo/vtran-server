@@ -17,7 +17,9 @@ const md5 = require("md5");
 const socket = require('./Socket/index')
 // 定时任务
 const cronTask = require('./cron/index')
-
+const prisma = require("./config/prisma");
+const initRedisModule = require('./redis')
+initRedisModule.load()
 // const http = require("http").createServer(app);
 // const io = require("socket.io")(http);
 // import socket set service
@@ -79,5 +81,11 @@ socket(app)
 
 // 定时任务
 cronTask()
+
+// 进程退出关闭连接
+process.on('SIGINT', async () => {
+  await prisma.$disconnect()
+  process.exit(0)
+})
 
 module.exports = app;

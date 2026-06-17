@@ -21,6 +21,7 @@ const addUser_func = async (req, res) => {
   try {
     let user = req.body
     let data = await userModel.addUser(user)
+    console.log(data, 'sssss')
     ReturnTokenUser(res, data)
   } catch (e) {
     console.log('进来', e)

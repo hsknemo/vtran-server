@@ -7,6 +7,8 @@ const fs = require('fs')
 const path = require('path')
 const moment = require("moment");
 const Base = require('../base.model')
+const prisma = require("../../config/prisma");
+const {userRedis} = require("../../redis/userRedis");
 require('dotenv').config();
 
 class UserModel extends Base{
@@ -16,7 +18,9 @@ class UserModel extends Base{
     }
 
     async getUser() {
-       return await this.getModelData()
+        let d = await prisma.user.findMany()
+        return d
+       // return await this.getModelData()
     }
 
     static init() {
@@ -39,16 +43,11 @@ class UserModel extends Base{
     }
 
     async checkUserIsExit(user) {
-        return new Promise(async (resolve, reject) => {
-            let isHasUser =  false
-            let userModel = await this.getUser()
-            userModel.forEach(item => {
-                if (item.username === user.username) {
-                    isHasUser= true
-                }
-            })
-            resolve(isHasUser)
-        })
+        return prisma.user.findFirst({
+            where: {
+                username: user.username
+            }
+        });
     }
 
     async findUserPool(users) {
@@ -64,16 +63,34 @@ class UserModel extends Base{
     }
 
     async saveUser(user) {
-        let userModel = await this.getUser()
-        if (user.id) {
-            userModel = userModel.filter(item => item.id !== user.id)
-            user.updateTime = moment().format('YYYY-MM-DD HH:mm:ss')
+        let bool = await prisma.user.findFirst({
+            where: {
+                username: user.username
+            }
+        })
+        let id = user.id
+        if (bool) {
+            id = bool.id
+            prisma.user.update({
+                where: {
+                    id,
+                },
+                update: {
+                    updateTime: moment().toDate(),
+                },
+            })
         } else {
-            user.id = crypto.randomUUID()
-            user.insertTime = moment().format('YYYY-MM-DD HH:mm:ss')
+            id = crypto.randomUUID()
+            await prisma.user.create({
+                data: {
+                    id,
+                    username: user.username,
+                    insertTime: moment().toDate(),
+                    updateTime: moment().toDate(),
+                }
+            })
         }
-        userModel.push(user)
-        fs.writeFileSync(path.resolve(__dirname, './user.json'), JSON.stringify(userModel, null, 2), 'utf-8')
+
         return user
     }
 
@@ -98,6 +115,7 @@ class UserModel extends Base{
     }
 
     async updateUser(user) {
+        console.log('调用更新。。。。')
         try {
             let bool = await this.checkUserIsExit(user)
             if (!bool) {
@@ -128,13 +146,13 @@ class UserModel extends Base{
     }
 
     async findUserByName(username) {
-        let userModel = await this.getUser()
-        let bool = await this.checkUserIsExit({username})
-        if (!bool) {
+        let user = await this.checkUserIsExit({username})
+        if (!user) {
             throw new Error('用户不存在')
         }
-        let findResult = userModel.filter(item => item.username === username)
-        return findResult.length ? findResult[0] : null
+        user.heartBeatTime = moment().format('YYYY-MM-DD HH:mm:ss')
+        userRedis.setUser(user.id, user)
+        return user
     }
 
     async uploadProfile(tokenUser, req) {
