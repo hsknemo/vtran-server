@@ -11,6 +11,17 @@ const adapter = new PrismaMariaDb({
   port: Number(process.env.DB_PORT || 3306),
 })
 
-const prisma = new PrismaClient({ adapter })
+const prisma = new PrismaClient({
+  adapter,
+  log: ['query', 'info', 'warn', 'error'],
+})
+
+prisma.$on('query', (e) => {
+  console.log('---------------------------start-------------------------------')
+  console.log('Query:', e.query)
+  console.log('Params:', e.params)
+  console.log('Duration:', e.duration + 'ms')
+  console.log('---------------------------end-------------------------------')
+})
 
 module.exports = prisma

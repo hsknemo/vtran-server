@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Dict` ADD COLUMN `groupName` VARCHAR(191) NOT NULL DEFAULT '';

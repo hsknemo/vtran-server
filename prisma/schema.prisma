@@ -5,10 +5,13 @@
 
 generator client {
   provider = "prisma-client-js"
+  // 打印所有SQL、参数、耗时
+  log      = ["query", "info", "warn", "error"]
 }
 
 datasource db {
   provider = "mysql"
+
 }
 
 // 用户表
@@ -155,9 +158,11 @@ model Report {
   reportUser  String
 }
 
-model ReportDict {
+model Dict {
   id         String   @id
   insertTime DateTime @default(now())
   name        String
   code        String
+  userId      String
+  groupName   String @default("")
 }
