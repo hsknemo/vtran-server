@@ -5,7 +5,7 @@ const { AUTHORIZATION } = require("../middware/Authorization");
 const { ERROR, SUCCESS } = require("../_requestResponse/setResponse");
 const routeName = "/ding";
 const { DingModel: dingModel } = require("../model/ding/ding.model");
-let userModel = require("../model/user/user.model");
+let userModel = require("../model/user.model");
 const { validatorMiddleware } = require("../middware/Validator");
 const ding_add_func = async (req, res) => {
   try {

@@ -10,7 +10,6 @@ const SUCCESS = function(data, msg = '服务调用成功') {
     timestamp: now(),
     // 兼容旧协议字段
     status: 1,
-    msg,
   }
 }
 const ERROR = function(msg = '服务调用失败', code = 1, data = null) {
@@ -23,7 +22,6 @@ const ERROR = function(msg = '服务调用失败', code = 1, data = null) {
     timestamp: now(),
     // 兼容旧协议字段
     status: 0,
-    msg,
   }
 }
 
@@ -35,7 +33,6 @@ const ERROR_CODE = function(code, msg = '服务调用失败', data = null) {
     data,
     timestamp: now(),
     status: 0,
-    msg,
   }
 }
 module.exports = {

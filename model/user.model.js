@@ -6,15 +6,19 @@ const crypto = require("crypto");
 const fs = require('fs')
 const path = require('path')
 const moment = require("moment");
-const Base = require('../base.model')
-const prisma = require("../../config/prisma");
-const {userRedis} = require("../../redis/userRedis");
+const Base = require('./base.model')
+const prisma = require("../config/prisma");
+const {userRedis} = require("../redis/userRedis");
 require('dotenv').config();
 
 class UserModel extends Base{
     constructor() {
         super()
         this.filePath = path.resolve(__dirname, './user.json')
+    }
+
+    async countUser() {
+        return prisma.user.count()
     }
 
     async getUser() {

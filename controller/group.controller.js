@@ -4,7 +4,7 @@
 const { ERROR, SUCCESS} = require("../_requestResponse/setResponse");
 const routeName = '/group'
 const GroupModel = require('../model/group/group.model')
-const userModel = require('../model/user/user.model')
+const userModel = require('../model/user.model')
 const {validatorMiddleware} = require("../middware/Validator");
 const {AUTHORIZATION} = require("../middware/Authorization");
 const eventEmitter = require("../Event");

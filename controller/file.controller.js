@@ -10,7 +10,7 @@ const moment = require("moment");
 const {AUTHORIZATION} = require("../middware/Authorization");
 const fileModel = FileModel.new()
 const fileService = require("../service/file.service")
-const userModel = require('../model/user/user.model')
+const userModel = require('../model/user.model')
 const eventEmitter = require("../Event");
 const {PROFILE_MESSAGE_EVENT} = require("../Socket/type/socket.event.type");
 const fileChunkModel = require("../model/fileChunk/fileChunk.model")
@@ -126,6 +126,7 @@ const file_delete = {
 const getFile_func_mine = async (req, res) => {
   try {
     let userId = req.tokenResolveResult.id
+    console.log(req.tokenResolveResult, '22222')
     let query = req.query
     let result = await fileService.getMineSendFileList(userId, query)
     res.send(SUCCESS(result))

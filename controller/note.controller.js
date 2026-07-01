@@ -7,7 +7,7 @@ const { ERROR, SUCCESS } = require("../_requestResponse/setResponse");
 const fs = require("fs");
 const routeName = "/note";
 const { NoteModel } = require("../model/note/note.model");
-const userModel = require("../model/user/user.model");
+const userModel = require("../model/user.model");
 const noteModel = NoteModel.new();
 const note_get_func = async (req, res) => {
   try {

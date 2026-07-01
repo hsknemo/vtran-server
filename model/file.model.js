@@ -56,8 +56,10 @@ class FileModel extends Base {
 
     let listFromUser = this.prisma.file.findMany(query)
 
+
     let [list, total] = await Promise.all([listFromUser, listFromUserCount])
 
+    console.log(list, 'list', userId)
     return {
       list,
       total

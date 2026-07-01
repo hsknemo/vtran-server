@@ -2,11 +2,10 @@
  * 用户模块
  */
 const {SUCCESS, ERROR} = require("../_requestResponse/setResponse");
-const userModel = require('../model/user/user.model')
+const userModel = require('../model/user.model')
 const {createJwtToken, secretKey, AUTHORIZATION} = require("../middware/Authorization");
 const routeName = '/user'
-const eventEmitter = require('../Event/index')
-const userSocketService = require('../Socket/user.socket.service')
+const userService = require('../service/user.service')
 const ReturnTokenUser = (res, data) => {
   let token = createJwtToken(data, secretKey, '24h')
   res.header({
@@ -121,6 +120,23 @@ const find_profile = {
   desc: '修改个人信息'
 }
 
+
+const count_user_func = async (req, res) => {
+  try {
+    let result = await userService.countUser()
+    res.send(SUCCESS(result))
+  } catch (e) {
+    res.send(ERROR(e.message))
+  }
+}
+const count_user = {
+  method: 'get',
+  path: `${routeName}/count`,
+  midFun: [AUTHORIZATION],
+  func: count_user_func,
+  desc: '获取用户数量'
+}
+
 module.exports = [
   addUser,
   loginUser,
@@ -128,4 +144,5 @@ module.exports = [
   getUserAll,
   upload_profile,
   find_profile,
+  count_user,
 ]
