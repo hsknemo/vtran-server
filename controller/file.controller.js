@@ -15,6 +15,7 @@ const eventEmitter = require("../Event");
 const {PROFILE_MESSAGE_EVENT} = require("../Socket/type/socket.event.type");
 const fileChunkModel = require("../model/fileChunk/fileChunk.model")
 const {validatorMiddleware} = require("../middware/Validator");
+const uploadService = require("../service/upload.service")
 const {saveFileChunk, sendFileDownloadResponse} = require("../utils/Js_Tool");
 const routeName = '/file'
 const getRandomStr = () => {
@@ -183,7 +184,7 @@ const file_chunk_upload_func = async (req, res) => {
     });
 
     // 记录切片数据上传状态
-    let loaded = await fileChunkModel.chunkSaveAndUpdate({
+    let loaded = await uploadService.chunkSaveAndUpdate({
       id: md5Key,
       toUser: userId,
       fromUser: fromUserId,
@@ -216,17 +217,16 @@ const file_chunk_merge_func = async (req, res) => {
     let md5Key = req.body.md5Key
     let userId = req.body.toUserId
     let fromUserId = req.body.fromUserId
-    let file = await fileChunkModel.chunkMerge({
+    let file = await uploadService.chunkMerge({
       md5Key, userId, fromUserId
     })
     // 写入 发送文件数据
-    await fileModel.createOrUpdate(new FileDataStruct({
-      id: crypto.randomUUID(),
+    await fileService.addRecord({
+      md5Key: md5Key,
       fileName: file.fileName,
       toUser: userId,
       fromUser: fromUserId,
-      insertTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-    }))
+    })
     // 将新文件通知到用户
     eventEmitter.emit(PROFILE_MESSAGE_EVENT, {
       user: {

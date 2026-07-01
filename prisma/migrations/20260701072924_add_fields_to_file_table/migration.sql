@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `File` ADD COLUMN `fileMd5Key` LONGTEXT NULL;

@@ -21,6 +21,18 @@ class FileModel extends Base {
 
   }
 
+  async addRecord(form) {
+    return this.prisma.file.create({
+      data: {
+        id: crypto.randomUUID(),
+        fileName: form.fileName,
+        toUser: form.toUser,
+        fromUser: form.fromUser,
+        fileMd5Key: form.md5Key,
+      }
+    });
+  }
+
 
   async getMineSendFileList(userId, form = {page: 1, pageSize: 10}) {
     let query = {

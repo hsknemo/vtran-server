@@ -46,6 +46,7 @@ model File {
   fileName   String?  @db.LongText
   toUser     String
   fromUser   String
+  fileMd5Key  String? @db.LongText
 }
 
 // 上传文件记录状态表
@@ -55,7 +56,7 @@ model FileChunk {
   fileName       String?  @db.LongText
   toUser         String
   fromUser       String
-  chunkTotalLen  Int
+  chunkTotalLen  Int // num / 1000 kb
   updateTime     DateTime @updatedAt
   fileIsUploaded Boolean
   chunkPathArr   String   @db.LongText
