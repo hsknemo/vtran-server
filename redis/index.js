@@ -1,6 +1,6 @@
 const {userRedis} = require("./userRedis");
 module.exports = {
-  load() {
-    userRedis.onload()
+  async load() {
+    await userRedis.onload()
   }
 }

@@ -1,29 +1,23 @@
 ﻿/**
  * @name node后端套路Express
  */
-
 const express = require("express");
 const app = express();
-const log = console.log.bind(console);
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const router = require("./route/init_routes.js");
 const path = require("path");
 const session = require("express-session");
 const expressFileUpload = require("express-fileupload");
-const { beautiLog } = require("./log/beautifulLog");
 const log4j = require("./logControl/index");
-const md5 = require("md5");
 const socket = require('./Socket/index')
 // 定时任务
 const cronTask = require('./cron/index')
 const prisma = require("./config/prisma");
 const initRedisModule = require('./redis')
+// 挂载redis
 initRedisModule.load()
-// const http = require("http").createServer(app);
-// const io = require("socket.io")(http);
-// import socket set service
-// const regisSockets = require('./socketController/index')
+
 app.use(expressFileUpload());
 app.use(
   session({
@@ -57,11 +51,6 @@ app.use(
 app.use(bodyParser.json());
 app.use(log4j());
 
-
-// 端口配置
-
-// 配置端口号
-const port = require("./config/Port").port;
 
 app.use(cors());
 

@@ -35,18 +35,7 @@ class ReportService {
     let data = await this.model.exportReportFile(form);
     // 2. 创建工作簿 + 工作表
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('数据列表');
-
-    worksheet.mergeCells(1, 1, 1, 3);
-    const titleCell = worksheet.getCell(1, 1);
-    titleCell.value = '字典分组汇总统计表';
-    titleCell.alignment = { horizontal: 'center', vertical: 'middle' }; // 居中
-    titleCell.font = { size: 14, bold: true };
-    titleCell.fill = {
-      type: 'pattern',
-      pattern: 'solid', // 纯色填充固定写 solid
-      fgColor: { argb: 'ff000000' }
-    }
+    const worksheet = workbook.addWorksheet('本周日报');
 
     // 3. 表头
     worksheet.columns = [

@@ -5,8 +5,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  // 打印所有SQL、参数、耗时
-  log      = ["query", "info", "warn", "error"]
 }
 
 datasource db {

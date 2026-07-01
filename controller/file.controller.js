@@ -5,10 +5,11 @@ const {SUCCESS, ERROR} = require("../_requestResponse/setResponse");
 const path = require('path')
 const fs = require('fs')
 const upload = require("../middware/uploadsUtils");
-const { FileModel, FileDataStruct } = require("../model/file/file.model");
+const { FileModel, FileDataStruct } = require("../model/file.model");
 const moment = require("moment");
 const {AUTHORIZATION} = require("../middware/Authorization");
 const fileModel = FileModel.new()
+const fileService = require("../service/file.service")
 const userModel = require('../model/user/user.model')
 const eventEmitter = require("../Event");
 const {PROFILE_MESSAGE_EVENT} = require("../Socket/type/socket.event.type");
@@ -87,20 +88,9 @@ const file_send = {
 const getFile_func = async (req, res) => {
   try {
     let userId = req.tokenResolveResult.id
-    let fileList = await fileModel.getFileListByUserId(userId)
-    if (fileList.length) {
-      for (let i = 0; i < fileList.length; i++) {
-        let item = fileList[i]
-        let user = await userModel.findUserById(item.fromUser)
-        if (user.length) {
-          fileList[i].fromUserName = user[0].username
-        }
-      }
-    }
-    fileList.sort((a, b) => {
-      return new Date(b.insertTime).getTime() - new Date(a.insertTime).getTime()
-    })
-    res.send(SUCCESS(fileList))
+    let body = req.query
+    let result = await fileService.getFileListByUserId(userId, body)
+    res.send(SUCCESS(result))
   } catch (e) {
     res.send(ERROR(e.message))
   }
@@ -135,28 +125,9 @@ const file_delete = {
 const getFile_func_mine = async (req, res) => {
   try {
     let userId = req.tokenResolveResult.id
-    let fileList = await fileModel.getFileListByFromUserId(userId)
-    if (fileList.length) {
-      const fromUserIds = [...new Set(fileList.map(item => item.fromUser))].filter(id => id);
-      if (fromUserIds.length > 0) {
-        const users = await userModel.findUserPool(fromUserIds);
-        const userMap = new Map();
-        users.forEach(user => {
-          userMap.set(user.id, user.username);
-        });
-
-        fileList.forEach(item => {
-          const username = userMap.get(item.fromUser);
-          if (username) {
-            item.fromUserName = username;
-          }
-        });
-      }
-    }
-    fileList.sort((a, b) => {
-      return new Date(b.insertTime).getTime() - new Date(a.insertTime).getTime()
-    })
-    res.send(SUCCESS(fileList))
+    let query = req.query
+    let result = await fileService.getMineSendFileList(userId, query)
+    res.send(SUCCESS(result))
   } catch (e) {
     res.send(ERROR(e.message))
   }

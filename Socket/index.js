@@ -19,7 +19,7 @@ const greenMsg = (msg, paddingLeft = 2, paddingRight = 2, showBr) => {
   let pl = padding(paddingLeft)
   let pr = padding(paddingRight)
 
-  console.log(terminalInputTextStyle.bgGreenBright(terminalInputTextStyle.black(pl + msg + pr)))
+  console.log(terminalInputTextStyle.bgCyan(terminalInputTextStyle.black(pl + msg + pr)))
   if (showBr) {
     console.log('')
   }
@@ -53,10 +53,10 @@ module.exports = app => {
 
   let server = require('http').createServer(app)
   server.listen(port, () => {
-    let len = greenMsg('🦖 TONE_SERVER VERSION v1.0 LOVE AND PEACE 🦖', 2, 2)
-    greenMsg('端口监听如下：', 2, len - 18)
-    greenMsg(`监听端口在: ${process.env.TONE_PORT}`, 2,len - 20)
-    greenMsg(`webSocket 端口监听在:  ${wsPort}`,2, len - 31)
+    let len = greenMsg('⛰ TONE_SERVER VERSION v1.0 LOVE AND PEACE ⛰', 2, 2)
+    greenMsg(' APP INFO：', 2, len - 13)
+    greenMsg(`【APP RUN PORT】: ${process.env.TONE_PORT}`, 2,len - 24)
+    greenMsg(`【WEBSOCKET RUN PORT】:  ${wsPort}`,2, len - 31)
   })
   let wss = new WebSocket.Server({
     port: wsPort

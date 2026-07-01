@@ -1,6 +1,7 @@
-const Base = require("../base.model");
+const Base = require("./base.model");
 const {resolve} = require("node:path");
 const fs = require('fs')
+const prisma = require("../config/prisma");
 
 const FileDataStruct = function (o = {}) {
   return {
@@ -16,11 +17,76 @@ class FileModel extends Base {
   constructor() {
     super();
     this.filePath = resolve(__dirname, './file.json')
+    this.prisma = prisma
+
+  }
+
+
+  async getMineSendFileList(userId, form = {page: 1, pageSize: 10}) {
+    let query = {
+      where: {
+        fromUser: userId
+      }
+    }
+    let listFromUserCount = this.prisma.file.count(query)
+
+
+    if (form.page && form.pageSize) {
+      query = Object.assign({}, query, {
+        take: parseInt(form.pageSize),
+        skip: parseInt((form.page - 1) * form.pageSize),
+      })
+    }
+
+    query.orderBy = {
+      insertTime: 'desc'
+    }
+
+    let listFromUser = this.prisma.file.findMany(query)
+
+    let [list, total] = await Promise.all([listFromUser, listFromUserCount])
+
+    return {
+      list,
+      total
+    }
+  }
+
+
+  async getFileListByUserId(userId, form = {page: 1, pageSize: 10}) {
+    let query = {
+      where: {
+        toUser: userId
+      }
+    }
+    let listFromUserCount = this.prisma.file.count(query)
+
+
+    if (form.page && form.pageSize) {
+      query = Object.assign({}, query, {
+        take: parseInt(form.pageSize),
+        skip: parseInt((form.page - 1) * form.pageSize),
+      })
+    }
+
+    query.orderBy = {
+      insertTime: 'desc'
+    }
+
+    let listFromUser = this.prisma.file.findMany(query)
+
+    let [list, total] = await Promise.all([listFromUser, listFromUserCount])
+
+    return {
+      list,
+      total
+    }
   }
 
   async delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+
 
   async createOrUpdate(file) {
     await this.delay(500)

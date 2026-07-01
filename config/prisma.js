@@ -13,10 +13,11 @@ const adapter = new PrismaMariaDb({
 
 const prisma = new PrismaClient({
   adapter,
-  log: ['query', 'info', 'warn', 'error'],
+  // log: ['query', 'info', 'warn', 'error'],
 })
 
 prisma.$on('query', (e) => {
+  return
   console.log('---------------------------start-------------------------------')
   console.log('Query:', e.query)
   console.log('Params:', e.params)

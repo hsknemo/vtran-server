@@ -6,7 +6,7 @@ const moment = require("moment");
 const updateUserOnlineStatusCron = () => {
   // 每 10 秒执行一次任务
   cron.schedule('*/10 * * * * *', async () => {
-    console.log('每10秒执行一次 →', new Date().toLocaleString());
+    // console.log('每10秒执行一次 →', new Date().toLocaleString());
     let user = await userRedis.getUser()
     for (const userKey in user) {
       let item = user[userKey]

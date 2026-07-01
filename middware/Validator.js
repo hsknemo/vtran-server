@@ -37,17 +37,25 @@ class Validator {
                     }
                     this.errorCollection.push(`${key}不能为空`);
                 }
-            }
-            // 验证类型
-            if (item.type && item.value !== undefined && item.value !== null) {
-                if (!typeValidator(item.value, item.type)) {
-                    this.errorCollection.push(`${key}值类型错误 需要类型为 ${item.type}`);
+
+                if (item.type === 'Array') {
+                    if (!item.value.length) {
+                        this.errorCollection.push(`${key}不能为空`);
+                    }
+                }
+
+                // 验证类型
+                if (item.type && item.value !== undefined && item.value !== null) {
+                    if (!typeValidator(item.value, item.type)) {
+                        this.errorCollection.push(`${key}值类型错误 需要类型为 ${item.type}`);
+                    }
+                }
+                if (this.errorCollection.length) {
+                    this.runError();
+                    break;
                 }
             }
-            if (this.errorCollection.length) {
-                this.runError();
-                break;
-            }
+
         }
     }
 }
