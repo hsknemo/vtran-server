@@ -89,7 +89,7 @@ const getUserAll = {
 const upload_profile_func = async (req, res) => {
   try {
     let user = req.tokenResolveResult
-    let data = await userModel.uploadProfile(user, req)
+    let data = await userService.uploadPropfile(user, req)
     res.send(SUCCESS(data))
   } catch (e) {
     res.send(ERROR(e.message))
@@ -106,7 +106,7 @@ const upload_profile = {
 const find_profile_func = async (req, res) => {
   try {
     let user = req.tokenResolveResult
-    let data = await userModel.findUserById(user.id)
+    let data = await userService.findUserById(user.id)
     res.send(SUCCESS(data))
   } catch (e) {
     res.send(ERROR(e.message))
@@ -117,7 +117,7 @@ const find_profile = {
   path: `${routeName}/profile`,
   midFun: [AUTHORIZATION],
   func: find_profile_func,
-  desc: '修改个人信息'
+  desc: '查询个人信息'
 }
 
 

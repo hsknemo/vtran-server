@@ -15,6 +15,7 @@ class UserModel extends Base{
     constructor() {
         super()
         this.filePath = path.resolve(__dirname, './user.json')
+        this.prisma = prisma
     }
 
     async countUser() {
@@ -143,11 +144,20 @@ class UserModel extends Base{
     }
 
     async findUserById(id) {
-        if (!id) return []
-        let userModel = await this.getUser()
-        let findResult = userModel.filter(item => item.id === id)
-        return findResult.length ? findResult : []
+        let user = await this.prisma.user.findFirst({
+            where: {
+                id
+            }
+        })
+        return user
     }
+
+    // async findUserById(id) {
+    //     if (!id) return []
+    //     let userModel = await this.getUser()
+    //     let findResult = userModel.filter(item => item.id === id)
+    //     return findResult.length ? findResult : []
+    // }
 
     async findUserByName(username) {
         let user = await this.checkUserIsExit({username})
@@ -165,6 +175,23 @@ class UserModel extends Base{
             let desc = requestBody.desc
             let blobImg = req?.files?.blobImg
             let imgPath = ''
+            let user = this.prisma.user.findFirst({
+                where: {
+                    id: tokenUser.id
+                },
+            })
+
+            if (!user) {
+                throw new Error('用户不存在')
+            }
+            const updateUserProp = {
+                where: {
+                    id: tokenUser.id
+                },
+                data: {
+                    desc,
+                }
+            }
             if (blobImg) {
                 let random_str = crypto.randomUUID() + '_' + Date.now()
                 let userProfilePath = path.join(process.cwd(), `/uploads/userProfile/${tokenUser.id}`)
@@ -173,18 +200,9 @@ class UserModel extends Base{
                 }
                 imgPath = `${random_str}.png`
                 fs.writeFileSync(path.join(userProfilePath, `/${imgPath}`), blobImg.data, 'binary')
+                updateUserProp.data.avatar = imgPath
             }
-            let modelData = await this.getModelData()
-            modelData.forEach(item => {
-                if (item.id === tokenUser.id) {
-                    item.desc = desc
-                    if (imgPath) {
-                        item.userImg = imgPath
-                    }
-                }
-            })
-            await this.save(modelData)
-            return '保存成功'
+            return this.prisma.user.update(updateUserProp)
         } catch (e) {
             throw new Error(e.message)
         }

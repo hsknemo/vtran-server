@@ -59,7 +59,6 @@ class FileModel extends Base {
 
     let [list, total] = await Promise.all([listFromUser, listFromUserCount])
 
-    console.log(list, 'list', userId)
     return {
       list,
       total

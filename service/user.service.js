@@ -10,6 +10,17 @@ class UserService {
     }
   }
 
+  async uploadPropfile(user, req) {
+    if (!user.id) {
+      throw new Error('用户不存在')
+    }
+    return await this.userModel.uploadProfile(user, req)
+  }
+
+  async findUserById(id) {
+    return await this.userModel.findUserById(id)
+  }
+
 
 }
 

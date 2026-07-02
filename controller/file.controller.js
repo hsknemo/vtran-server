@@ -126,7 +126,6 @@ const file_delete = {
 const getFile_func_mine = async (req, res) => {
   try {
     let userId = req.tokenResolveResult.id
-    console.log(req.tokenResolveResult, '22222')
     let query = req.query
     let result = await fileService.getMineSendFileList(userId, query)
     res.send(SUCCESS(result))
@@ -250,7 +249,7 @@ const file_chunk_merge = {
 
 const file_download_func = async (req, res) => {
   try {
-    let {stream, fileSize } = await fileModel.downloadFile(req.body)
+    let {stream, fileSize } = await fileService.downloadFile(req.body)
     let cutArr = req.body.fileName.split('_').slice(1)
     // 针对用户的名称下划线处理
     const fileStr = cutArr.length > 1 ? cutArr.join('_') : cutArr.join('');

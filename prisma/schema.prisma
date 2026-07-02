@@ -20,6 +20,8 @@ model User {
   updateTime DateTime  @updatedAt
   ip         String?
   heartbeat  DateTime?
+  avatar     String?
+  desc String?  // 个性签名
 }
 
 // 分类表

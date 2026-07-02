@@ -22,6 +22,10 @@ class FileService {
     return await this.fileModel.addRecord(form)
   }
 
+  async downloadFile(body) {
+    return await this.fileModel.downloadFile(body)
+  }
+
 }
 
 module.exports = new FileService()

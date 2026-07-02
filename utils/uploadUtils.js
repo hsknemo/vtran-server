@@ -31,7 +31,6 @@ class UploadUtils {
     pathArray.sort((a, b) => {
       return a.split('_')[0] - b.split('_')[0]
     })
-    console.log('根据路径创建读取', pathArray, typeof pathArray)
     for (let i = 0; i < pathArray.length; i++) {
       const chunkBuffer = fs.readFileSync(pathArray[i]);
       writeStream.write(chunkBuffer); // 数据可能还在缓冲区
